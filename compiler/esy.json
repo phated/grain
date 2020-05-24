@@ -20,6 +20,7 @@
     "@opam/grain_typed": "*",
     "@opam/grain_middle_end": "*",
     "@opam/grain_codegen": "*",
+    "@opam/grain_js": "*",
     "ocaml": "~4.8.1000"
   },
   "resolutions": {
@@ -28,7 +29,8 @@
     "@opam/grain_parsing": "path:./grain_parsing.opam",
     "@opam/grain_typed": "path:./grain_typed.opam",
     "@opam/grain_middle_end": "path:./grain_middle_end.opam",
-    "@opam/grain_codegen": "path:./grain_codegen.opam"
+    "@opam/grain_codegen": "path:./grain_codegen.opam",
+    "@opam/grain_js": "path:./grain_js.opam"
   },
   "installConfig": {
     "pnp": false

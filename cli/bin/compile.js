@@ -1,5 +1,8 @@
 const { execSync } = require('child_process');
 
+const grain = require('../../compiler/_esy/default/build/default/grain_js/grain_js.bc.js');
+console.log(grain);
+
 module.exports = (file, options) => {
   try {
     execSync(`grainc --stdlib=${options.stdlib} ${options.cflags ? options.cflags : ''} ${file}`);
