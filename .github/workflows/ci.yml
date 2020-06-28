@@ -4,7 +4,13 @@ on: [push, pull_request]
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -34,7 +40,7 @@ jobs:
         run: |
           yarn compiler:build
       # Re-export dependencies if anything has changed or if it is the first time
-      - name: Build esy cache 
+      - name: Build esy cache
         run: |
           yarn workspace @grain/compiler run esy export-dependencies
         if: steps.restore-cache.outputs.cache-hit != 'true'
