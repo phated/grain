@@ -37,6 +37,7 @@ jobs:
             ${{ runner.os }}-esy-
 
       - name: Import esy cache
+        continue-on-error: true
         run: |
           yarn workspace @grain/compiler run esy import-dependencies _export
           npx -p del-cli del compiler/_export
