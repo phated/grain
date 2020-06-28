@@ -15,7 +15,7 @@
   "scripts": {
     "compiler:clean": "yarn workspace @grain/compiler run esy clean",
     "compiler:build": "yarn workspace @grain/compiler run esy install && yarn workspace @grain/compiler run esy compile && yarn workspace @grain/compiler run esy copy-compiler",
-    "postcompiler:build": "yarn stdlib:clean",
+    "postcompiler:build": "yarn compiler:link && yarn stdlib:clean",
     "compiler:test": "yarn workspace @grain/compiler run esy test",
     "test": "yarn compiler:test",
     "runtime:build": "yarn workspace @grain/runtime build",
@@ -24,6 +24,6 @@
     "stdlib:clean": "yarn workspace @grain/stdlib clean",
     "cli:link": "yarn workspace @grain/cli link",
     "compiler:link": "yarn workspace @grain/compiler link",
-    "setup": "yarn runtime:build && yarn stdlib:build && yarn cli:link && yarn compiler:link"
+    "setup": "yarn runtime:build && yarn stdlib:build && yarn cli:link"
   }
 }
