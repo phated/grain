@@ -18,10 +18,18 @@ jobs:
           node-version: '14.x'
 
       - uses: actions/checkout@v2
+
       - name: Set up runtime and CLI
         run: |
           yarn
           yarn setup
+
+      - name: Prepare cygwin
+        if: matrix.os == 'windows-latest'
+        env:
+          CYGWIN_ROOT: 'node_modules/esy/node_modules/esy-bash/.cygwin'
+        run: |
+          ${{ env.CYGWIN_ROOT }}/setup-x86_64.exe --quiet-mode --root ${{ env.CYGWIN_ROOT }} --site http://cygwin.mirror.constant.com --packages mingw64-x86_64-binutils
 
       # - name: esy install
       #   run: |
