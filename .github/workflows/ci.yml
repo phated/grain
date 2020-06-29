@@ -36,8 +36,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-esy-
 
+      # Only import the dependency cache if we had a cache hit
       - name: Import esy cache
-        continue-on-error: true
+        if: steps.restore-cache.outputs.cache-hit == 'true'
         run: |
           yarn workspace @grain/compiler run esy import-dependencies _export
           npx -p del-cli del compiler/_export
@@ -48,9 +49,9 @@ jobs:
 
       # Re-export dependencies if anything has changed or if it is the first time
       - name: Build esy cache
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
           yarn workspace @grain/compiler run esy export-dependencies
-        if: steps.restore-cache.outputs.cache-hit != 'true'
 
       - name: Run tests
         run: |
