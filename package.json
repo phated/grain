@@ -25,6 +25,6 @@
     "cli:link": "yarn workspace @grain/cli link",
     "compiler:link": "yarn workspace @grain/compiler link",
     "setup": "yarn runtime:build && yarn stdlib:build && yarn cli:link",
-    "prepare": "npx shx ls node_modules/esy/node_modules/esy-bash"
+    "prepare": "npx shx ls node_modules/esy/node_modules/esy-bash/.cygwin"
   }
 }
