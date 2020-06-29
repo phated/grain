@@ -36,7 +36,8 @@
     "@opam/grain_parsing": "link:./grain_parsing.opam",
     "@opam/grain_typed": "link:./grain_typed.opam",
     "@opam/grain_middle_end": "link:./grain_middle_end.opam",
-    "@opam/grain_codegen": "link:./grain_codegen.opam"
+    "@opam/grain_codegen": "link:./grain_codegen.opam",
+    "@opam/grain_dypgen": "phated/dypgen:grain_dypgen.opam#62be34ba27edb823f94bce1419855529197a92c4"
   },
   "installConfig": {
     "pnp": false
