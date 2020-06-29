@@ -9,7 +9,6 @@
     "node": ">=14"
   },
   "devDependencies": {
-    "esy": "0.6.6",
-    "esy-bash": "git://github.com/phated/esy-bash#master"
+    "esy": "0.6.6"
   }
 }
