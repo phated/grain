@@ -24,6 +24,7 @@
     "@opam/grain_typed": "*",
     "@opam/grain_middle_end": "*",
     "@opam/grain_codegen": "*",
+    "@opam/grain_dypgen": "phated/dypgen:grain_dypgen.opam#b1852a88a61178fee9cb8d8915c9ece7e48429b6",
     "ocaml": "~4.10.0"
   },
   "devDependencies": {
@@ -37,7 +38,8 @@
     "@opam/grain_parsing": "link:./grain_parsing.opam",
     "@opam/grain_typed": "link:./grain_typed.opam",
     "@opam/grain_middle_end": "link:./grain_middle_end.opam",
-    "@opam/grain_codegen": "link:./grain_codegen.opam"
+    "@opam/grain_codegen": "link:./grain_codegen.opam",
+    "@opam/grain_dypgen": "phated/dypgen:grain_dypgen.opam#b1852a88a61178fee9cb8d8915c9ece7e48429b6"
   },
   "installConfig": {
     "pnp": false
