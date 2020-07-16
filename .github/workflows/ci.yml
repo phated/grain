@@ -15,4 +15,4 @@ jobs:
       - name: Build compiler
         shell: bash
         run: |
-          cmake --help
+          command -v cmake
