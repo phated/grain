@@ -15,7 +15,7 @@ depends: [
   "ocamlbuild" {build & >= "0.12.0"}
   "ppx_sexp_conv" {>= "0.14.0"}
   "sexplib" {>= "0.14.0"}
-  "grain_dypgen" {= "0.1"}
+  "grain_dypgen" {= "0.2"}
   "ounit" {>= "2.0.0"}
   "fp" {>= "0.0.0"}
   "fs" {>= "0.0.0"}
