@@ -1,5 +1,5 @@
 {
-  "checksum": "d8218ef213e0eae4e731bed692e18710",
+  "checksum": "72341b0190a74150a6ff83f435d28f9e",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -33,7 +33,8 @@
         "@opam/grain_codegen@link:./grain_codegen.opam",
         "@opam/grain@link:./grain.opam",
         "@opam/fs@github:facebookexperimental/reason-native:fs.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9",
-        "@opam/fp@github:facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9"
+        "@opam/fp@github:facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9",
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41@d41d8cd9"
       ],
       "devDependencies": [
         "@opam/reason@opam:3.6.0@2da53ff9",
@@ -1166,7 +1167,7 @@
         "@opam/grain_dypgen@opam:0.2@ef01d3b4",
         "@opam/dune@opam:2.6.1@e1bf507c",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@opam:0.2.2@0f695fc4",
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41@d41d8cd9",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1180,7 +1181,7 @@
         "@opam/grain_dypgen@opam:0.2@ef01d3b4",
         "@opam/dune@opam:2.6.1@e1bf507c",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@opam:0.2.2@0f695fc4"
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41@d41d8cd9"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1510,23 +1511,6 @@
       "dependencies": [ "@esy-ocaml/substs@0.0.1@d41d8cd9" ],
       "devDependencies": []
     },
-    "@opam/conf-cmake@opam:1@75ae6bc3": {
-      "id": "@opam/conf-cmake@opam:1@75ae6bc3",
-      "name": "@opam/conf-cmake",
-      "version": "opam:1",
-      "source": {
-        "type": "install",
-        "source": [ "no-source:" ],
-        "opam": {
-          "name": "conf-cmake",
-          "version": "1",
-          "path": "esy.lock/opam/conf-cmake.1"
-        }
-      },
-      "overrides": [],
-      "dependencies": [ "@esy-ocaml/substs@0.0.1@d41d8cd9" ],
-      "devDependencies": []
-    },
     "@opam/cmdliner@opam:1.0.4@93208aac": {
       "id": "@opam/cmdliner@opam:1.0.4@93208aac",
       "name": "@opam/cmdliner",
@@ -1575,27 +1559,22 @@
         "@opam/dune@opam:2.6.1@e1bf507c"
       ]
     },
-    "@opam/binaryen@opam:0.2.2@0f695fc4": {
-      "id": "@opam/binaryen@opam:0.2.2@0f695fc4",
+    "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41@d41d8cd9": {
+      "id":
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41@d41d8cd9",
       "name": "@opam/binaryen",
-      "version": "opam:0.2.2",
+      "version":
+        "github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/md5/17/1753373cf3fbd094432dbd4b8d62a9c5#md5:1753373cf3fbd094432dbd4b8d62a9c5",
-          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/v0.2.2/binaryen-archive-v0.2.2.tar.gz#md5:1753373cf3fbd094432dbd4b8d62a9c5"
-        ],
-        "opam": {
-          "name": "binaryen",
-          "version": "0.2.2",
-          "path": "esy.lock/opam/binaryen.0.2.2"
-        }
+          "github:grain-lang/binaryen.ml:binaryen.opam#2d540dff72e5ae3046aa3cd42858f26749a22b41"
+        ]
       },
       "overrides": [],
       "dependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/dune@opam:2.6.1@e1bf507c",
         "@opam/conf-python-3@opam:1.0.0@a6b2949d",
-        "@opam/conf-cmake@opam:1@75ae6bc3",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
