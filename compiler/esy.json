@@ -19,7 +19,6 @@
     "check-format": "dune build @fmt"
   },
   "dependencies": {
-    "@opam/binaryen": "*",
     "@opam/grain": "*",
     "@opam/grainc": "*",
     "@opam/grain_utils": "*",
@@ -37,7 +36,6 @@
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam#ce1840355541ff60b999e39388835027f89d8798"
   },
   "resolutions": {
-    "@opam/binaryen": "grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73",
     "@opam/grain": "link:./grain.opam",
     "@opam/grainc": "link:./grainc.opam",
     "@opam/grain_utils": "link:./grain_utils.opam",
