@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "esy": {
     "buildEnv": {
+      "PATH": "#{$PATH}",
       "DUNE_BUILD_DIR": "#{self.target_dir}",
       "GRAIN_STDLIB": "#{self.root / '..' / 'stdlib'}",
       "GRAINC_BIN_PATH": "#{self.target_dir / 'default' / 'grainc' / 'grainc.exe'}",
