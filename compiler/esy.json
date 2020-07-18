@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "esy": {
     "buildEnv": {
-      "WINDOWS_CI_PATH": "#{ '/c/Program Files/CMake/bin/' : '/c/hostedtoolcache/windows/Python/3.7.8/x64/'}",
-      "PATH": "{ (os =='windows' ? '$WINDOWS_CI_PATH' : '') : $PATH }",
+      "PATH": "{ (os =='windows' ? '/c/Program Files/CMake/bin/:/c/hostedtoolcache/windows/Python/3.7.8/x64/' : '') : $PATH }",
       "DUNE_BUILD_DIR": "#{self.target_dir}",
       "GRAIN_STDLIB": "#{self.root / '..' / 'stdlib'}",
       "GRAINC_BIN_PATH": "#{self.target_dir / 'default' / 'grainc' / 'grainc.exe'}",
