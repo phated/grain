@@ -1,5 +1,5 @@
 {
-  "checksum": "7e01db56b978758c511b7a8a120a2075",
+  "checksum": "d8218ef213e0eae4e731bed692e18710",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -33,8 +33,7 @@
         "@opam/grain_codegen@link:./grain_codegen.opam",
         "@opam/grain@link:./grain.opam",
         "@opam/fs@github:facebookexperimental/reason-native:fs.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9",
-        "@opam/fp@github:facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9",
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73@d41d8cd9"
+        "@opam/fp@github:facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9"
       ],
       "devDependencies": [
         "@opam/reason@opam:3.6.0@2da53ff9",
@@ -1167,7 +1166,7 @@
         "@opam/grain_dypgen@opam:0.2@ef01d3b4",
         "@opam/dune@opam:2.6.1@e1bf507c",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73@d41d8cd9",
+        "@opam/binaryen@opam:0.2.2@0f695fc4",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1181,7 +1180,7 @@
         "@opam/grain_dypgen@opam:0.2@ef01d3b4",
         "@opam/dune@opam:2.6.1@e1bf507c",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73@d41d8cd9"
+        "@opam/binaryen@opam:0.2.2@0f695fc4"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1460,6 +1459,23 @@
         "@opam/base-unix@opam:base@87d0b2eb"
       ]
     },
+    "@opam/conf-python-3@opam:1.0.0@a6b2949d": {
+      "id": "@opam/conf-python-3@opam:1.0.0@a6b2949d",
+      "name": "@opam/conf-python-3",
+      "version": "opam:1.0.0",
+      "source": {
+        "type": "install",
+        "source": [ "no-source:" ],
+        "opam": {
+          "name": "conf-python-3",
+          "version": "1.0.0",
+          "path": "esy.lock/opam/conf-python-3.1.0.0"
+        }
+      },
+      "overrides": [],
+      "dependencies": [ "@esy-ocaml/substs@0.0.1@d41d8cd9" ],
+      "devDependencies": []
+    },
     "@opam/conf-openssl@opam:2@fddedae6": {
       "id": "@opam/conf-openssl@opam:2@fddedae6",
       "name": "@opam/conf-openssl",
@@ -1488,6 +1504,23 @@
           "name": "conf-m4",
           "version": "1",
           "path": "esy.lock/opam/conf-m4.1"
+        }
+      },
+      "overrides": [],
+      "dependencies": [ "@esy-ocaml/substs@0.0.1@d41d8cd9" ],
+      "devDependencies": []
+    },
+    "@opam/conf-cmake@opam:1@75ae6bc3": {
+      "id": "@opam/conf-cmake@opam:1@75ae6bc3",
+      "name": "@opam/conf-cmake",
+      "version": "opam:1",
+      "source": {
+        "type": "install",
+        "source": [ "no-source:" ],
+        "opam": {
+          "name": "conf-cmake",
+          "version": "1",
+          "path": "esy.lock/opam/conf-cmake.1"
         }
       },
       "overrides": [],
@@ -1542,21 +1575,27 @@
         "@opam/dune@opam:2.6.1@e1bf507c"
       ]
     },
-    "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73@d41d8cd9": {
-      "id":
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73@d41d8cd9",
+    "@opam/binaryen@opam:0.2.2@0f695fc4": {
+      "id": "@opam/binaryen@opam:0.2.2@0f695fc4",
       "name": "@opam/binaryen",
-      "version":
-        "github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73",
+      "version": "opam:0.2.2",
       "source": {
         "type": "install",
         "source": [
-          "github:grain-lang/binaryen.ml:binaryen.opam#6d66f85a3be2b86c11feb97e3d1a3626054d1a73"
-        ]
+          "archive:https://opam.ocaml.org/cache/md5/17/1753373cf3fbd094432dbd4b8d62a9c5#md5:1753373cf3fbd094432dbd4b8d62a9c5",
+          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/v0.2.2/binaryen-archive-v0.2.2.tar.gz#md5:1753373cf3fbd094432dbd4b8d62a9c5"
+        ],
+        "opam": {
+          "name": "binaryen",
+          "version": "0.2.2",
+          "path": "esy.lock/opam/binaryen.0.2.2"
+        }
       },
       "overrides": [],
       "dependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/dune@opam:2.6.1@e1bf507c",
+        "@opam/conf-python-3@opam:1.0.0@a6b2949d",
+        "@opam/conf-cmake@opam:1@75ae6bc3",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
