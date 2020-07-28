@@ -51,6 +51,7 @@ jobs:
           shx rm -rf compiler/_export
 
       - name: Build compiler
+        shell: bash
         run: |
           yarn compiler build
 
