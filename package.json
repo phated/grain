@@ -18,7 +18,7 @@
     "test": "yarn compiler test",
     "cli": "yarn workspace @grain/cli run",
     "runtime": "yarn workspace @grain/runtime run",
-    "compiler": "yarn workspace @grain/compiler run",
+    "compiler": "ESY__GLOBAL_PATH=PATH yarn workspace @grain/compiler run",
     "stdlib": "yarn workspace @grain/stdlib run",
     "postcompiler": "yarn stdlib clean"
   }

@@ -23,6 +23,13 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
+"@esy-nightly/esy@latest":
+  version "0.6.6-6699f2"
+  resolved "https://registry.yarnpkg.com/@esy-nightly/esy/-/esy-0.6.6-6699f2.tgz#3141030c725ad3431d5ac5cfdf4941a55c718f85"
+  integrity sha512-9cnuaX3iHvb+2f/BDvTVftAKOxpKKJ4tD+9w72H8RYR4MmQnKwhXiB3Rcf2UJlX4albCQkK0WfVfUpd6WYvZww==
+  dependencies:
+    esy-solve-cudf "^0.1.10"
+
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -1249,13 +1256,6 @@ esy-solve-cudf@^0.1.10:
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/esy-solve-cudf/-/esy-solve-cudf-0.1.10.tgz#2cd48af78183ae8f06c035a398beb65673c2d77d"
   integrity sha512-/MrZOBH0wuJndvZN8pl+S3Mg3zJaK70PH9ZZwqDeJHulghEWROEZxpmenNiS9pqAaxyUVhTZJBt2/vL9jKCJbg==
-
-esy@0.6.6:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/esy/-/esy-0.6.6.tgz#5c8dafd1ba717ee9f2d5121065a5101ae51ebb39"
-  integrity sha512-moR72ovr80fRZ7XKtt4oOtecrRUdfOGlz/+BO6TxOMK1oD2Y3q65wBH4ofQbni3g1b2KGmsXawMw+KHC5gmFLQ==
-  dependencies:
-    esy-solve-cudf "^0.1.10"
 
 events@^3.0.0:
   version "3.1.0"
