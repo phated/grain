@@ -18,6 +18,14 @@ jobs:
           node-version: '14'
           check-latest: true
 
+      - name: PATH
+        shell: bash
+        run: |
+          echo $PATH
+          which cmake
+          which python3
+          which yarn
+
       # This configures yarn to use node/npm prefix in our path
       # It also adds `shx` globally for cross-platform shell commands
       - name: Setup environment
@@ -55,7 +63,7 @@ jobs:
         run: |
           yarn compiler build
         env:
-          PATH: /c/Program Files/CMake/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+          PATH: /c/hostedtoolcache/windows/Python/3.7.8/x64/:/c/Program Files/CMake/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
       # Re-export dependencies if anything has changed or if it is the first time
       - name: Build esy cache
