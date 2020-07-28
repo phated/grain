@@ -2,6 +2,7 @@
   "name": "compiler",
   "version": "0.0.0",
   "esy": {
+    "build": "dune build",
     "buildEnv": {
       "DUNE_BUILD_DIR": "#{self.target_dir}",
       "GRAIN_STDLIB": "#{self.root / '..' / 'stdlib'}",
@@ -10,7 +11,6 @@
     }
   },
   "scripts": {
-    "compile": "dune build",
     "copy-compiler": "cp #{$GRAINC_BIN_PATH} #{$CLI_BIN_DIR}",
     "clean": "rm -rf #{self.root}/_esy",
     "test": "dune runtest --force",
