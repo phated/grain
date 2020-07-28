@@ -1,5 +1,5 @@
 {
-  "checksum": "4baf0944605589dd790eb40b3f2d99f9",
+  "checksum": "ce43a172b9457c71e2c35bf7f2b36fb0",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -10,6 +10,22 @@
         "type": "install",
         "source": [
           "archive:https://registry.npmjs.org/ocaml/-/ocaml-4.10.0.tgz#sha1:3797ee252dca8dec38d3cdd42162923f56dba433"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [],
+      "devDependencies": []
+    },
+    "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9": {
+      "id":
+        "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9",
+      "name": "esy-cmake",
+      "version":
+        "github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096",
+      "source": {
+        "type": "install",
+        "source": [
+          "github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096"
         ]
       },
       "overrides": [],
@@ -36,6 +52,7 @@
         "@opam/fp@github:facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296@d41d8cd9"
       ],
       "devDependencies": [
+        "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#ce1840355541ff60b999e39388835027f89d8798@d41d8cd9"
       ],
