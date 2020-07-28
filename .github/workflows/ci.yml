@@ -63,7 +63,7 @@ jobs:
         run: |
           yarn compiler build
         env:
-          PATH: /c/hostedtoolcache/windows/node/14.5.0/x64:/c/hostedtoolcache/windows/Python/3.7.8/x64:/c/Program Files/CMake/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+          PATH: /c/hostedtoolcache/windows/node/14.5.0/x64:/c/npm/prefix:/c/Program Files/nodejs:/c/hostedtoolcache/windows/Python/3.7.8/x64:/c/Program Files/CMake/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
       # Re-export dependencies if anything has changed or if it is the first time
       - name: Build esy cache
