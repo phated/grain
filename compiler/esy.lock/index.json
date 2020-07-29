@@ -1,5 +1,5 @@
 {
-  "checksum": "762ff76b573be2d02af4d64560b0b52c",
+  "checksum": "9350ed02827e7f5e6afdcb37145115c6",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -48,6 +48,24 @@
       "dependencies": [
         "esy-zlib@github:esy-packages/esy-zlib#404929fd8b7ed83ed6a528d751840faff957b4b3@d41d8cd9",
         "esy-libffi@github:esy-ocaml/libffi#599bc3567ecf839240977b6d9aaf0b80f983b5aa@d41d8cd9"
+      ],
+      "devDependencies": []
+    },
+    "esy-ninja@github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae@d41d8cd9": {
+      "id":
+        "esy-ninja@github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae@d41d8cd9",
+      "name": "esy-ninja",
+      "version":
+        "github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae",
+      "source": {
+        "type": "install",
+        "source": [
+          "github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [
+        "esy-python@github:esy-packages/esy-python#53918f6447633d149ca59329474714c50bf729c4@d41d8cd9"
       ],
       "devDependencies": []
     },
@@ -104,6 +122,7 @@
       ],
       "devDependencies": [
         "esy-python@github:esy-packages/esy-python#53918f6447633d149ca59329474714c50bf729c4@d41d8cd9",
+        "esy-ninja@github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae@d41d8cd9",
         "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#ce1840355541ff60b999e39388835027f89d8798@d41d8cd9"
@@ -1175,7 +1194,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1189,7 +1208,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974@d41d8cd9"
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1541,16 +1560,16 @@
         "@opam/dune@opam:2.6.2@c38125a5"
       ]
     },
-    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974@d41d8cd9": {
+    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9": {
       "id":
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
       "name": "@opam/binaryen",
       "version":
-        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974",
+        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#sha1:0e56b488be1c52f16cfbf58c80c66496df8b1974"
+          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa"
         ]
       },
       "overrides": [],

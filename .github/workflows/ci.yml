@@ -74,6 +74,7 @@ jobs:
         run: |
           yarn compiler build
         env:
+          # https://github.com/actions/virtual-environments/issues/104#issuecomment-647683426
           CI_PATH: "C:/msys64/mingw64/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
           ESY__GLOBAL_PATH: "CI_PATH"
 
