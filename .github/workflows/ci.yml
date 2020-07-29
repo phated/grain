@@ -72,7 +72,7 @@ jobs:
         run: |
           yarn compiler build
         env:
-          CI_PATH: "/c/ProgramData/Chocolatey/bin"
+          CI_PATH: "/c/ProgramData/Chocolatey/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
           ESY__GLOBAL_PATH: "CI_PATH"
 
       # Re-export dependencies if anything has changed or if it is the first time
