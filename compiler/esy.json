@@ -8,7 +8,7 @@
       "GRAIN_STDLIB": "#{self.root / '..' / 'stdlib'}",
       "GRAINC_BIN_PATH": "#{self.target_dir / 'default' / 'grainc' / 'grainc.exe'}",
       "CLI_BIN_DIR": "#{self.root / '..' / 'cli' / 'bin'}",
-      "CMAKE_CXX_COMPILER": "/c/ProgramData/Chocolatey/bin/gcc"
+      "CC": "/c/ProgramData/Chocolatey/bin/gcc"
     }
   },
   "scripts": {
