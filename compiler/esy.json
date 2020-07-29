@@ -44,7 +44,7 @@
     "@opam/grain_typed": "link:./grain_typed.opam",
     "@opam/grain_middle_end": "link:./grain_middle_end.opam",
     "@opam/grain_codegen": "link:./grain_codegen.opam",
-    "@opam/binaryen": "grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d",
+    "@opam/binaryen": "https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing.tar.gz#0e56b488be1c52f16cfbf58c80c66496df8b1974",
     "@opam/fp": "facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/fs": "facebookexperimental/reason-native:fs.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/utf8": "facebookexperimental/reason-native:utf8.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296"
