@@ -15,6 +15,10 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.1
 
+      - name: Install LLVM
+         run: choco install -y llvm
+         if: runner.os == 'Windows'
+
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.0
         with:
@@ -28,6 +32,7 @@ jobs:
           which cmake
           which python
           which yarn
+          which gcc
 
       # This configures yarn to use node/npm prefix in our path
       # It also adds `shx` globally for cross-platform shell commands
