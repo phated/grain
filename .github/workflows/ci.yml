@@ -67,7 +67,12 @@ jobs:
           yarn compiler import-dependencies
           shx rm -rf compiler/_export
 
-      - name: Compiler ENV
+      - name: Compiler ENV without CI_PATH
+        shell: bash
+        run: |
+          yarn compiler env
+
+      - name: Compiler ENV with CI_PATH
         shell: bash
         run: |
           yarn compiler env
