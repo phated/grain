@@ -17,7 +17,7 @@ jobs:
 
       - name: Install LLVM
         shell: bash
-        run: choco install --install-directory=/usr/bin -y llvm
+        run: choco install -y llvm
         if: runner.os == 'Windows'
 
       - name: Setup Node.js
