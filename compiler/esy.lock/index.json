@@ -1,5 +1,5 @@
 {
-  "checksum": "0bafd702648fa99a73a83a8ed69cb9b1",
+  "checksum": "749146b723262f183ee598ba6c5a9e8a",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -1175,7 +1175,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed@d41d8cd9",
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d@d41d8cd9",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1189,7 +1189,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed@d41d8cd9"
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d@d41d8cd9"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1541,16 +1541,16 @@
         "@opam/dune@opam:2.6.2@c38125a5"
       ]
     },
-    "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed@d41d8cd9": {
+    "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d@d41d8cd9": {
       "id":
-        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed@d41d8cd9",
+        "@opam/binaryen@github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d@d41d8cd9",
       "name": "@opam/binaryen",
       "version":
-        "github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed",
+        "github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d",
       "source": {
         "type": "install",
         "source": [
-          "github:grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed"
+          "github:grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d"
         ]
       },
       "overrides": [],

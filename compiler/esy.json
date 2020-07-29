@@ -44,7 +44,7 @@
     "@opam/grain_typed": "link:./grain_typed.opam",
     "@opam/grain_middle_end": "link:./grain_middle_end.opam",
     "@opam/grain_codegen": "link:./grain_codegen.opam",
-    "@opam/binaryen": "grain-lang/binaryen.ml:binaryen.opam#f6dd68efb8fb204056fec7e84adb905a8b1f76ed",
+    "@opam/binaryen": "grain-lang/binaryen.ml:binaryen.opam#d264ca194cafaa3d45b3ec45eeed16989881839d",
     "@opam/fp": "facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/fs": "facebookexperimental/reason-native:fs.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/utf8": "facebookexperimental/reason-native:utf8.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296"
