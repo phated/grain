@@ -67,6 +67,14 @@ jobs:
           yarn compiler import-dependencies
           shx rm -rf compiler/_export
 
+      - name: Compiler ENV
+        shell: bash
+        run: |
+          yarn compiler env
+        env:
+          CI_PATH: "/c/ProgramData/Chocolatey/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+          ESY__GLOBAL_PATH: "CI_PATH"
+
       - name: Build compiler
         shell: bash
         run: |
