@@ -12,6 +12,8 @@ jobs:
         os: [windows-latest]
 
     steps:
+      - uses: numworks/setup-msys2@v1
+
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.0
         with:
