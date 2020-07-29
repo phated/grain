@@ -71,6 +71,9 @@ jobs:
         shell: bash
         run: |
           yarn compiler build
+        env:
+          CI_PATH: "/c/ProgramData/Chocolatey/bin"
+          ESY__GLOBAL_PATH: "CI_PATH"
 
       # Re-export dependencies if anything has changed or if it is the first time
       - name: Build esy cache

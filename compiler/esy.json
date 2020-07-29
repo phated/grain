@@ -7,8 +7,7 @@
       "DUNE_BUILD_DIR": "#{self.target_dir}",
       "GRAIN_STDLIB": "#{self.root / '..' / 'stdlib'}",
       "GRAINC_BIN_PATH": "#{self.target_dir / 'default' / 'grainc' / 'grainc.exe'}",
-      "CLI_BIN_DIR": "#{self.root / '..' / 'cli' / 'bin'}",
-      "CC": "/c/ProgramData/Chocolatey/bin/gcc"
+      "CLI_BIN_DIR": "#{self.root / '..' / 'cli' / 'bin'}"
     }
   },
   "scripts": {
