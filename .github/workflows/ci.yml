@@ -16,8 +16,8 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.1
 
       - name: Install LLVM
-         run: choco install -y llvm
-         if: runner.os == 'Windows'
+        run: choco install -y llvm
+        if: runner.os == 'Windows'
 
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.0
