@@ -12,6 +12,10 @@ jobs:
         os: [windows-latest]
 
     steps:
+      - name: Ninja
+        run: |
+          choco install ninja
+
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.0
         with:
@@ -26,6 +30,7 @@ jobs:
           which python
           which yarn
           which gcc
+          which ninja
 
       # This configures yarn to use node/npm prefix in our path
       # It also adds `shx` globally for cross-platform shell commands

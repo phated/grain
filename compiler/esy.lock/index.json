@@ -1,5 +1,5 @@
 {
-  "checksum": "9350ed02827e7f5e6afdcb37145115c6",
+  "checksum": "7a89b819ebc5053200448a9823bdfce6",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -1194,7 +1194,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1208,7 +1208,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9"
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1560,21 +1560,25 @@
         "@opam/dune@opam:2.6.2@c38125a5"
       ]
     },
-    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9": {
+    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9": {
       "id":
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9",
       "name": "@opam/binaryen",
       "version":
-        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa",
+        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa"
+          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525"
         ]
       },
       "overrides": [],
       "dependencies": [
-        "ocaml@4.10.0@d41d8cd9", "@opam/dune@opam:2.6.2@c38125a5"
+        "ocaml@4.10.0@d41d8cd9",
+        "esy-python@github:esy-packages/esy-python#53918f6447633d149ca59329474714c50bf729c4@d41d8cd9",
+        "esy-ninja@github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae@d41d8cd9",
+        "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9",
+        "@opam/dune@opam:2.6.2@c38125a5"
       ],
       "devDependencies": [],
       "installConfig": { "pnp": false }
