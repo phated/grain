@@ -64,23 +64,12 @@ jobs:
           yarn compiler import-dependencies
           shx rm -rf compiler/_export
 
-      - name: Compiler ENV without CI_PATH
-        run: |
-          yarn compiler env
-
-      - name: Compiler ENV with CI_PATH
-        run: |
-          yarn compiler env
-        env:
-          CI_PATH: "C:/msys64/mingw64/bin;C:/ProgramData/Chocolatey/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
-          ESY__GLOBAL_PATH: "CI_PATH"
-
       - name: Build compiler
         run: |
           yarn compiler build
         env:
           # https://github.com/actions/virtual-environments/issues/104#issuecomment-647683426
-          CI_PATH: "C:/msys64/mingw64/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
+          CI_PATH: "C:/msys64/mingw64/bin;C:/ProgramData/Chocolatey/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
           ESY__GLOBAL_PATH: "CI_PATH"
 
       # Re-export dependencies if anything has changed or if it is the first time
