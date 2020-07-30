@@ -1,5 +1,5 @@
 {
-  "checksum": "7a89b819ebc5053200448a9823bdfce6",
+  "checksum": "9350ed02827e7f5e6afdcb37145115c6",
   "root": "compiler@link-dev:./esy.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -484,20 +484,20 @@
         "@opam/dune@opam:2.6.2@c38125a5", "@opam/base@opam:v0.14.0@b8817fc1"
       ]
     },
-    "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe": {
-      "id": "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe",
+    "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d": {
+      "id": "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
       "name": "@opam/ppx_deriving_yojson",
-      "version": "opam:3.5.2",
+      "version": "opam:3.5.3",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/sha256/05/05fd2cf932b54d59daf8aaa23e74ca27c2a20301b753130e344c311910a39b63#sha256:05fd2cf932b54d59daf8aaa23e74ca27c2a20301b753130e344c311910a39b63",
-          "archive:https://github.com/ocaml-ppx/ppx_deriving_yojson/archive/v3.5.2.tar.gz#sha256:05fd2cf932b54d59daf8aaa23e74ca27c2a20301b753130e344c311910a39b63"
+          "archive:https://opam.ocaml.org/cache/md5/e5/e5185e4ac9d149a332566139df55d408#md5:e5185e4ac9d149a332566139df55d408",
+          "archive:https://github.com/ocaml-ppx/ppx_deriving_yojson/archive/v3.5.3.tar.gz#md5:e5185e4ac9d149a332566139df55d408"
         ],
         "opam": {
           "name": "ppx_deriving_yojson",
-          "version": "3.5.2",
-          "path": "esy.lock/opam/ppx_deriving_yojson.3.5.2"
+          "version": "3.5.3",
+          "path": "esy.lock/opam/ppx_deriving_yojson.3.5.3"
         }
       },
       "overrides": [],
@@ -512,6 +512,7 @@
       "devDependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/yojson@opam:1.7.0@7056d985",
         "@opam/result@opam:1.5@6b753c82",
+        "@opam/ppx_tools@opam:6.2@62a3aff2",
         "@opam/ppx_deriving@opam:4.5@bb81afdc",
         "@opam/dune@opam:2.6.2@c38125a5"
       ]
@@ -1039,7 +1040,7 @@
         "@opam/sexplib@opam:v0.14.0@f67f18de",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ppx_sexp_conv@opam:v0.14.0@a2eef025",
-        "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe",
+        "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
         "@opam/ounit@opam:2.2.3@840861c4",
         "@opam/ocamlgraph@opam:1.8.8@2767ad0b",
         "@opam/ocamlfind@opam:1.8.1@ff07b0f9",
@@ -1056,7 +1057,7 @@
         "@opam/sexplib@opam:v0.14.0@f67f18de",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ppx_sexp_conv@opam:v0.14.0@a2eef025",
-        "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe",
+        "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
         "@opam/ounit@opam:2.2.3@840861c4",
         "@opam/ocamlgraph@opam:1.8.8@2767ad0b",
         "@opam/grain_utils@link:./grain_utils.opam",
@@ -1082,7 +1083,7 @@
         "@opam/sexplib@opam:v0.14.0@f67f18de",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ppx_sexp_conv@opam:v0.14.0@a2eef025",
-        "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe",
+        "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
         "@opam/ounit@opam:2.2.3@840861c4",
         "@opam/ocamlgraph@opam:1.8.8@2767ad0b",
         "@opam/ocamlfind@opam:1.8.1@ff07b0f9",
@@ -1099,7 +1100,7 @@
         "@opam/sexplib@opam:v0.14.0@f67f18de",
         "@opam/reason@opam:3.6.0@2da53ff9",
         "@opam/ppx_sexp_conv@opam:v0.14.0@a2eef025",
-        "@opam/ppx_deriving_yojson@opam:3.5.2@ca415fbe",
+        "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
         "@opam/ounit@opam:2.2.3@840861c4",
         "@opam/ocamlgraph@opam:1.8.8@2767ad0b",
         "@opam/grain_utils@link:./grain_utils.opam",
@@ -1194,7 +1195,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
@@ -1208,7 +1209,7 @@
         "@opam/grain_dypgen@opam:0.1@0b95a143",
         "@opam/dune@opam:2.6.2@c38125a5",
         "@opam/cmdliner@opam:1.0.4@93208aac",
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9"
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9"
       ]
     },
     "@opam/grain@link:./grain.opam": {
@@ -1560,25 +1561,21 @@
         "@opam/dune@opam:2.6.2@c38125a5"
       ]
     },
-    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9": {
+    "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9": {
       "id":
-        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525@d41d8cd9",
+        "@opam/binaryen@archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa@d41d8cd9",
       "name": "@opam/binaryen",
       "version":
-        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525",
+        "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing3.tar.gz#sha1:bead5abd4e03eb4798a53c1a74d40ef6486e7525"
+          "archive:https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#sha1:520c3d5c34d2cd0a82ffc08815960044f6ce33fa"
         ]
       },
       "overrides": [],
       "dependencies": [
-        "ocaml@4.10.0@d41d8cd9",
-        "esy-python@github:esy-packages/esy-python#53918f6447633d149ca59329474714c50bf729c4@d41d8cd9",
-        "esy-ninja@github:esy-packages/esy-ninja#37fae9254002a02bb56c4b65b6fad54fcaae8bae@d41d8cd9",
-        "esy-cmake@github:esy-packages/esy-cmake#d3e4fb29ca3e01c13f62c8ca8af061ea976b6096@d41d8cd9",
-        "@opam/dune@opam:2.6.2@c38125a5"
+        "ocaml@4.10.0@d41d8cd9", "@opam/dune@opam:2.6.2@c38125a5"
       ],
       "devDependencies": [],
       "installConfig": { "pnp": false }

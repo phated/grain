@@ -72,7 +72,7 @@ jobs:
         run: |
           yarn compiler env
         env:
-          CI_PATH: "C:/msys64/mingw64/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
+          CI_PATH: "C:/msys64/mingw64/bin;C:/ProgramData/Chocolatey/bin;/usr/local/bin;/usr/bin;/bin;/usr/sbin;/sbin;C:/windows/System32"
           ESY__GLOBAL_PATH: "CI_PATH"
 
       - name: Build compiler
