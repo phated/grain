@@ -34,11 +34,9 @@
     "@opam/reason": "*",
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam#ce1840355541ff60b999e39388835027f89d8798",
     "esy-cmake": "esy-packages/esy-cmake",
-    "esy-python": "esy-packages/esy-python",
-    "esy-ninja": "esy-packages/esy-ninja"
+    "esy-python": "esy-packages/esy-python"
   },
   "resolutions": {
-    "esy-python": "esy-packages/esy-python#53918f6447633d149ca59329474714c50bf729c4",
     "@opam/grain": "link:./grain.opam",
     "@opam/grainc": "link:./grainc.opam",
     "@opam/grain_utils": "link:./grain_utils.opam",
@@ -46,7 +44,7 @@
     "@opam/grain_typed": "link:./grain_typed.opam",
     "@opam/grain_middle_end": "link:./grain_middle_end.opam",
     "@opam/grain_codegen": "link:./grain_codegen.opam",
-    "@opam/binaryen": "https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing2.tar.gz#520c3d5c34d2cd0a82ffc08815960044f6ce33fa",
+    "@opam/binaryen": "https://github.com/grain-lang/binaryen.ml/releases/download/testing/binaryen-archive-testing4.tar.gz#38983278418a71734cb69a36b2b1c71e0b2a115e",
     "@opam/fp": "facebookexperimental/reason-native:fp.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/fs": "facebookexperimental/reason-native:fs.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296",
     "@opam/utf8": "facebookexperimental/reason-native:utf8.opam#445493fca8d56ce58ee7c84a9e878a4303c9d296"
