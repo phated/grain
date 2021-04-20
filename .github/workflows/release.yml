@@ -8,8 +8,9 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      upload_url: ${{ steps.release.outputs.upload_url }}
+      # Remap these names because they are quite confusing
+      release_created: ${{ steps.release.outputs.releases_created }}
+      upload_url: ${{ steps.release.outputs['.--upload_url'] }}
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
         id: release
