@@ -4,67 +4,8 @@ on:
     types: [created]
 
 jobs:
-  build-pkg-macos:
-    name: Build Packaged Grain (MacOS)
-    runs-on: macos-latest
-    steps:
-      # Many of these steps are the same as building the compiler for tests
-      - name: Setup Node.js
-        uses: actions/setup-node@v2.1.2
-        with:
-          node-version: '14'
-          check-latest: true
-
-      - name: Setup environment
-        run: |
-          yarn config set prefix $(npm config get prefix)
-          yarn global add shx
-
-      - name: Checkout project
-        uses: actions/checkout@v2
-
-      - name: Set up runtime and CLI
-        run: |
-          yarn
-
-      - name: Esy setup
-        run: |
-          yarn compiler prepare
-
-      - name: Esy cache
-        id: esy-cache
-        uses: actions/cache@v2
-        with:
-          path: compiler/_export
-          key:  ${{ runner.os }}-esy-${{ hashFiles('compiler/esy.lock/index.json') }}
-
-      - name: Import esy cache
-        if: steps.esy-cache.outputs.cache-hit == 'true'
-        run: |
-          yarn compiler import-dependencies
-          shx rm -rf compiler/_export
-
-      - name: Build compiler
-        run: |
-          yarn compiler build
-
-      - name: Build Binary
-        run: |
-          yarn cli build-pkg
-
-      - name: Upload Binary Asset
-        id: upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./pkg/grain
-          asset_name: grain-macos
-          asset_content_type: application/octet-stream
-
-  build-pkg-linux:
-    name: Build Packaged Grain (Linux)
+  build-pkg:
+    name: Build Packaged Grain
     runs-on: ubuntu-latest
     steps:
       # Many of these steps are the same as building the compiler for tests
@@ -107,76 +48,39 @@ jobs:
         run: |
           yarn compiler build
 
-      - name: Build Binary
+      - name: Build Binaries
         run: |
-          yarn cli build-pkg
+          yarn cli build-pkg --target win-x64,mac-x64,linux-x64
 
-      - name: Upload Binary Asset
+      - name: Upload Binary (Windows)
         id: upload
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./pkg/grain
-          asset_name: grain-linux
+          asset_path: ./pkg/grain-win.exe
+          asset_name: grain-win-x64.exe
           asset_content_type: application/octet-stream
 
-  build-pkg-windows:
-    name: Build Packaged Grain (Windows)
-    runs-on: windows-latest
-    steps:
-      # Many of these steps are the same as building the compiler for tests
-      - name: Setup Node.js
-        uses: actions/setup-node@v2.1.2
-        with:
-          node-version: '14'
-          check-latest: true
-
-      - name: Setup environment
-        run: |
-          yarn config set prefix $(npm config get prefix)
-          yarn global add shx
-
-      - name: Checkout project
-        uses: actions/checkout@v2
-
-      - name: Set up runtime and CLI
-        run: |
-          yarn
-
-      - name: Esy setup
-        run: |
-          yarn compiler prepare
-
-      - name: Esy cache
-        id: esy-cache
-        uses: actions/cache@v2
-        with:
-          path: compiler/_export
-          key:  ${{ runner.os }}-esy-${{ hashFiles('compiler/esy.lock/index.json') }}
-
-      - name: Import esy cache
-        if: steps.esy-cache.outputs.cache-hit == 'true'
-        run: |
-          yarn compiler import-dependencies
-          shx rm -rf compiler/_export
-
-      - name: Build compiler
-        run: |
-          yarn compiler build
-
-      - name: Build Binary
-        run: |
-          yarn cli build-pkg
-
-      - name: Upload Binary Asset
+      - name: Upload Binary (Mac)
         id: upload
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./pkg/grain.exe
-          asset_name: grain-windows
+          asset_path: ./pkg/grain-macos
+          asset_name: grain-mac-x64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Binary (Linux)
+        id: upload
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./pkg/grain-linux
+          asset_name: grain-linux-x64
           asset_content_type: application/octet-stream
