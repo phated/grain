@@ -8,6 +8,11 @@ jobs:
     name: Build Packaged Grain (MacOS)
     runs-on: macos-latest
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github.event) }}
+        run: echo "$GITHUB_CONTEXT"
+
       # Many of these steps are the same as building the compiler for tests
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.2
