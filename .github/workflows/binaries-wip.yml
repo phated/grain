@@ -48,6 +48,10 @@ jobs:
         run: |
           yarn compiler build
 
+      - name: Remove grainc.exe
+        run: |
+          shx rm cli/bin/grainc.exe
+
       - name: Build Binaries
         run: |
           yarn cli build-pkg --target win-x64,mac-x64,linux-x64
