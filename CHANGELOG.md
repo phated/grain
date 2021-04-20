@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/phated/grain/compare/grain-v0.3.0...grain-v0.4.0) (2021-04-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* try some fixes & replace later
+
+### Miscellaneous Chores
+
+* try some fixes & replace later ([a6e67fd](https://www.github.com/phated/grain/commit/a6e67fdc073b0c17072317a46c8c7bb977ceab13))
+
 ## [0.3.0](https://www.github.com/phated/grain/compare/grain-v0.2.0...grain-v0.3.0) (2021-04-20)
 
 
