@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.2](https://www.github.com/phated/grain/compare/@grain/compiler-v0.3.1...@grain/compiler-v0.3.2) (2021-04-29)
+
+
+### Features
+
+* Rename Queue/Stack functions & deprecate old ones ([33dcab6](https://www.github.com/phated/grain/commit/33dcab68cdcad35890ded95626e597482e505986))
+
 ### [0.3.1](https://www.github.com/grain-lang/grain/compare/@grain/compiler-v0.3.0...@grain/compiler-v0.3.1) (2021-04-29)
 
 
