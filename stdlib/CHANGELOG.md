@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.0](https://www.github.com/phated/grain/compare/stdlib-v0.4.0...stdlib-v0.5.0) (2021-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **stdlib:** Add foooooo
+
+### Features
+
+* **stdlib:** Add foooooo ([6f3ebd7](https://www.github.com/phated/grain/commit/6f3ebd73e43ff2cbe668e1aef2f43ea7975753d6))
+
 ## [0.4.0](https://www.github.com/grain-lang/grain/compare/stdlib-v0.3.2...stdlib-v0.4.0) (2021-09-06)
 
 
