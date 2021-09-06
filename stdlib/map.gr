@@ -336,3 +336,5 @@ export let reject = (predicate, map) => {
 export let getInternalStats = (map) => {
   (map.size, Array.length(map.buckets))
 }
+
+let foo = ""
