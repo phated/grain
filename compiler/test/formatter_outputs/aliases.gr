@@ -18,18 +18,15 @@ type AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongLineBreakingType
 type AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongLineBreakingType<
   a,
   b
-> = String // Test comment
+> = String
 
-type Foo<a, b> = String // Test comment
+type Foo<a, b> = String
 
-type Foo<a, b> = String /* Test comment */
-
-type Foo<a, b> = String // Test comment
+type Foo<a, b> = String
 
 // Test comment
 type Foo = String
 
-/* Test comment */
 type Foo = String
 
 type Foo = String // Test comment

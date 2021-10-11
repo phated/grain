@@ -5,11 +5,7 @@ const settingsPath = path.join(__dirname, "settings.json");
 
 const ocamlsandbox = "ocaml.sandbox";
 
-const output = {
-  "files.associations": {
-    "*.dyp": "ocaml.ocamllex",
-  },
-};
+const output = {};
 
 // On Mac and Linux, we can use our yarn trick
 // but on Windows, they don't run vscode in the correct directory

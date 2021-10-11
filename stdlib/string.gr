@@ -1761,8 +1761,11 @@ let trimString = (str: String, end: Bool) => {
       currentChar != '\r' // CR
     ) break
   }
-  if (end) slice(0, i+1, str)
-  else slice(i, charsLength, str)
+  if (end) {
+    slice(0, i+1, str)
+  } else { 
+    slice(i, charsLength, str)
+  }
 }
 /**
  * Trims the beginning of a string—removing any leading whitespace characters.
