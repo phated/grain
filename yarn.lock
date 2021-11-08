@@ -250,6 +250,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.3.tgz#90420f9f9c6d3987f176a19a7d8e764271a2f55d"
   integrity sha512-Fxt+AfXgjMoin2maPIYzFZnQjAXjAL0PHscM5pRTtatFqB+vZxAM9tLp2Optnuw3QOQC40jTNeGYFOMvyf7v9g==
 
+"@esy-nightly/esy@0.6.11-ada327":
+  version "0.6.11-ada327"
+  resolved "https://registry.yarnpkg.com/@esy-nightly/esy/-/esy-0.6.11-ada327.tgz#85f17b977364af63cbd33490ca653dd8f705b4d0"
+  integrity sha512-BCGB67o3PRBhRGcqsTBQFLId1WVbwfVlXzMHqti895j0Flw5GkMv9ute3tf5TD74dHjllU9Tc6BC3acQBZJrEg==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -1228,11 +1233,6 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
-
-esy@0.6.11:
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/esy/-/esy-0.6.11.tgz#120a4095db0cbeb430967f8bb307a3dbe3165512"
-  integrity sha512-LyrQWS/c7FYwjmgSlmYcj7w7as40iVuF6aCSHKMAZq1xgmdpjorQ7OEqg35ZUf8+xpUgKnDx4HrA3scdnfRTnA==
 
 events@^3.2.0:
   version "3.3.0"

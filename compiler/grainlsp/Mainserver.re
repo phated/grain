@@ -12,7 +12,7 @@ let run = log => {
     // let state = tick(state);
     if (canRead(stdin_descr)) {
       switch (Rpc.readMessage(log, stdin)) {
-      | _ => ()
+      | _ => loop(~isShuttingDown, ~documents, ~compiledCode)
       };
     } else {
       // log("looping....");
@@ -28,33 +28,7 @@ let run = log => {
       Rpc.sendCapabilities(log, stdout, id);
 
       loop(~isShuttingDown=false, ~documents, ~compiledCode);
-    // switch (getInitialState(params)) {
-    // | Ok(state) =>
-    //   Rpc.sendMessage(
-    //     log,
-    //     stdout,
-    //     id,
-    //     Json.Object([("capabilities", capabilities(params))]),
-    //   );
-    //   loop(~isShuttingDown=false, state);
-    // | Error(string) => Rpc.sendError(log, stdout, id, Json.String(string))
-    // | exception e =>
-    //   Log.log("Failed to get initial state");
-    //   Rpc.sendError(
-    //     log,
-    //     stdout,
-    //     id,
-    //     Util.JsonShort.(
-    //       o([
-    //         ("code", i(-32603)), /* InternalError */
-    //         (
-    //           "message",
-    //           s(Printexc.to_string(e) ++ Printexc.get_backtrace()),
-    //         ),
-    //       ])
-    //     ),
-    //   );
-    // }
+
     | _ => failwith("Client must send 'initialize' as first event")
     };
 

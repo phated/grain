@@ -1,45 +1,39 @@
+[@deriving yojson]
+type completionValues = {
+  resolveProvider: bool,
+  triggerCharacters: list(string),
+};
+
+[@deriving yojson]
+type signatureHelpers = {triggerCharacters: list(string)};
+
+[@deriving yojson]
+type codeValues = {resolveProvider: bool};
+
+[@deriving yojson]
+type lspCapabilities = {
+  documentFormattingProvider: bool,
+  textDocumentSync: int,
+  hoverProvider: bool,
+  completionProvider: completionValues,
+  signatureHelpProvider: signatureHelpers,
+  definitionProvider: bool,
+  typeDefinitionProvider: bool,
+  referencesProvider: bool,
+  documentSymbolProvider: bool,
+  codeActionProvider: bool,
+  codeLensProvider: codeValues,
+  documentHighlightProvider: bool,
+  documentRangeFormattingProvider: bool,
+  renameProvider: bool,
+};
+
+[@deriving yojson]
 type lens_t = {
   line: int,
   signature: string,
 };
-
-type range_t = {
-  start_line: int,
-  start_char: int,
-  end_line: int,
-  end_char: int,
-};
-
-type protocolMsg =
-  | Message(int, string, Yojson.Safe.t)
-  | Error(string)
-  | Notification(string, Yojson.Safe.t);
-
-// let messageFromJson = json => {
-//   let id = Json.get("id", json);
-//   let method = Json.get("method", json) |?> Json.string;
-//   let result = Json.get("result", json);
-//   let params = Json.get("params", json);
-//   switch (id) {
-//   | None =>
-//     Notification(
-//       method |! "method required",
-//       params |! "params required for notification",
-//     )
-//   | Some(id) =>
-//     switch (method, result) {
-//     | (_, Some(result)) => Response(id, result)
-//     | (Some(method), _) => Message(id, method, params |! "params required")
-//     | (None, None) => failwith("Either method or result required")
-//     }
-//   };
-// };
-
-type lens_t = {
-  line: int,
-  signature: string,
-};
-
+[@deriving yojson]
 type range_t = {
   start_line: int,
   start_char: int,
@@ -72,12 +66,6 @@ let readMessage = (log, input): protocolMsg => {
 
     let json = Yojson.Safe.from_string(raw);
 
-    //let basic = Yojson.Safe.to_basic(json);
-
-    //let oot = Yojson.Safe.show(json);
-
-    //log(oot);
-
     switch (json) {
     | `Assoc(items) => ()
     | _ => ()
@@ -106,14 +94,13 @@ let readMessage = (log, input): protocolMsg => {
 
 let send = (output, content) => {
   let length = String.length(content);
-  //let length = 90;
   let sep = Sys.os_type == "Unix" ? "\r\n\r\n" : "\n\n";
 
   let len = string_of_int(length);
 
   output_string(output, "Content-Length: " ++ len ++ sep ++ content);
   flush(output);
-} /* }*/;
+};
 
 [@deriving yojson]
 type response_error = {
@@ -127,11 +114,6 @@ type lsp_error_message = {
 };
 
 let sendMessage = (log, output, id: int) => {
-  // let error: response_error = {
-  //   code: (-32603),
-  //   message: "Not yet implemented",
-  // };
-
   let error =
     `Assoc([
       ("code", `Int(-32603)),
@@ -153,55 +135,43 @@ let sendMessage = (log, output, id: int) => {
 };
 
 let sendCapabilities = (log, output, id: int) => {
-  //{"triggerCharacters": ["("]}
-  let sigHelpers = `Assoc([("triggerCharacters", `List([`String("(")]))]);
+  let sigHelpers: signatureHelpers = {triggerCharacters: ["("]};
 
-  //"completionProvider": {"resolveProvider": true, "triggerCharacters": ["."]},
-  let completionVals =
-    `Assoc([
-      ("resolveProvider", `Bool(true)),
-      ("triggerCharacters", `List([`String(".")])),
-    ]);
-  let codeVals = `Assoc([("resolveProvider", `Bool(true))]);
+  let completionVals: completionValues = {
+    resolveProvider: true,
+    triggerCharacters: ["."],
+  };
 
-  let capabilities =
-    `Assoc([
-      ("documentFormattingProvider", `Bool(false)),
-      ("textDocumentSync", `Int(1)),
-      ("hoverProvider", `Bool(true)),
-      ("completionProvider", completionVals),
-      ("signatureHelpProvider", sigHelpers),
-      ("definitionProvider", `Bool(true)),
-      ("typeDefinitionProvider", `Bool(false)),
-      ("referencesProvider", `Bool(false)),
-      ("documentSymbolProvider", `Bool(true)),
-      ("codeActionProvider", `Bool(true)),
-      ("codeLensProvider", codeVals),
-      ("documentHighlightProvider", `Bool(false)),
-      ("documentRangeFormattingProvider", `Bool(false)),
-      ("documentFormattingProvider", `Bool(false)),
-      ("renameProvider", `Bool(false)),
-    ]);
+  let codeVals: codeValues = {resolveProvider: true};
+
+  let capabilities: lspCapabilities = {
+    documentFormattingProvider: false,
+    textDocumentSync: 1,
+    hoverProvider: true,
+    completionProvider: completionVals,
+    signatureHelpProvider: sigHelpers,
+    definitionProvider: true,
+    typeDefinitionProvider: false,
+    referencesProvider: false,
+    documentSymbolProvider: false,
+    codeActionProvider: true,
+    codeLensProvider: codeVals,
+    documentHighlightProvider: false,
+    documentRangeFormattingProvider: false,
+    renameProvider: false,
+  };
 
   let res =
     `Assoc([
       ("jsonrpc", `String("2.0")),
       ("id", `Int(id)),
-      ("result", `Assoc([("capabilities", capabilities)])),
+      (
+        "result",
+        `Assoc([("capabilities", lspCapabilities_to_yojson(capabilities))]),
+      ),
     ]);
 
-  let strJson = Yojson.Basic.to_string(res);
-
-  //let strJson = {|{"jsonrpc": "2.0","id": 0,
-
-  //"result": {"capabilities": {"textDocumentSync": 1, "hoverProvider": true,
-  //"completionProvider": {"resolveProvider": true, "triggerCharacters": ["."]},
-  //"signatureHelpProvider": {"triggerCharacters": ["("]},
-  //"definitionProvider": true, "typeDefinitionProvider": true,
-  //"referencesProvider": true, "documentSymbolProvider": true,
-  //"codeActionProvider": true, "codeLensProvider": {"resolveProvider": true},
-  //"documentHighlightProvider": true, "documentRangeFormattingProvider": true,
-  //"documentFormattingProvider": true, "renameProvider": true}}}|};
+  let strJson = Yojson.Safe.to_string(res);
 
   log("sending " ++ strJson);
   send(output, strJson);
