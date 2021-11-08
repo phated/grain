@@ -41,6 +41,26 @@ type range_t = {
   end_char: int,
 };
 
+[@deriving yojson]
+type position = {
+  line: int,
+  character: int,
+};
+
+[@deriving yojson]
+type range = {
+  start: position,
+  [@key "end"]
+  range_end: position,
+};
+
+[@deriving yojson]
+type completionItem = {
+  label: string,
+  kind: int,
+  detail: string,
+};
+
 type protocolMsg =
   | Message(int, string, Yojson.Safe.t)
   | Error(string)
@@ -113,7 +133,7 @@ type lsp_error_message = {
   error: response_error,
 };
 
-let sendMessage = (log, output, id: int) => {
+let sendError = (log, output, id: int) => {
   let error =
     `Assoc([
       ("code", `Int(-32603)),
@@ -173,9 +193,7 @@ let sendCapabilities = (log, output, id: int) => {
 
   let strJson = Yojson.Safe.to_string(res);
 
-  log("sending " ++ strJson);
   send(output, strJson);
-  log("sent");
 };
 
 let sendNotificationMessage = (log, output, message) => {
@@ -228,9 +246,7 @@ let sendSignature = (log, output, id: int, sigs: list(string)) => {
 
   let strJson = Yojson.Basic.pretty_to_string(res);
 
-  log("sending signature " ++ strJson);
   send(output, strJson);
-  log("sent");
 };
 
 let sendDiagnostics =
@@ -245,18 +261,9 @@ let sendDiagnostics =
     switch (error) {
     | None => []
     | Some(err) =>
-      let rstart =
-        `Assoc([
-          ("line", `Int(err.line)),
-          ("character", `Int(err.startchar)),
-        ]);
-      let rend =
-        `Assoc([
-          ("line", `Int(err.endline)),
-          ("character", `Int(err.endchar)),
-        ]);
-
-      let range = `Assoc([("start", rstart), ("end", rend)]);
+      let rstart: position = {line: err.line, character: err.startchar};
+      let rend: position = {line: err.endline, character: err.endchar};
+      let range = range_to_yojson({start: rstart, range_end: rend});
 
       [
         `Assoc([
@@ -274,18 +281,9 @@ let sendDiagnostics =
       let warningDiags =
         List.map(
           (w: Grain_diagnostics.Output.lsp_warning) => {
-            let rstart =
-              `Assoc([
-                ("line", `Int(w.line)),
-                ("character", `Int(w.startchar)),
-              ]);
-            let rend =
-              `Assoc([
-                ("line", `Int(w.endline)),
-                ("character", `Int(w.endchar)),
-              ]);
-
-            let range = `Assoc([("start", rstart), ("end", rend)]);
+            let rstart: position = {line: w.line, character: w.startchar};
+            let rend: position = {line: w.endline, character: w.endchar};
+            let range = range_to_yojson({start: rstart, range_end: rend});
 
             `Assoc([
               ("range", range),
@@ -310,8 +308,7 @@ let sendDiagnostics =
       ),
     ]);
 
-  let jsonMessage = Yojson.Basic.to_string(notification);
-  log("sending message notification " ++ jsonMessage);
+  let jsonMessage = Yojson.Safe.to_string(notification);
 
   send(output, jsonMessage);
 };
@@ -328,7 +325,6 @@ let clearDiagnostics = (log, output, uri) => {
     ]);
 
   let jsonMessage = Yojson.Basic.to_string(notification);
-  log("sending message notification " ++ jsonMessage);
 
   send(output, jsonMessage);
 };
@@ -336,13 +332,10 @@ let clearDiagnostics = (log, output, uri) => {
 let sendLenses = (log, output, id: int, lenses: list(lens_t)) => {
   let convertedLenses =
     List.map(
-      l => {
-        let rstart =
-          `Assoc([("line", `Int(l.line - 1)), ("character", `Int(1))]);
-        let rend =
-          `Assoc([("line", `Int(l.line - 1)), ("character", `Int(1))]);
-
-        let range = `Assoc([("start", rstart), ("end", rend)]);
+      (l: lens_t) => {
+        let rstart: position = {line: l.line - 1, character: 1};
+        let rend: position = {line: l.line - 1, character: 1};
+        let range = range_to_yojson({start: rstart, range_end: rend});
 
         `Assoc([("range", range), ("data", `String(l.signature))]);
       },
@@ -358,11 +351,9 @@ let sendLenses = (log, output, id: int, lenses: list(lens_t)) => {
       ("result", lensesJson),
     ]);
 
-  let strJson = Yojson.Basic.pretty_to_string(res);
+  let strJson = Yojson.Safe.pretty_to_string(res);
 
-  //log("sending message " ++ strJson);
   send(output, strJson);
-  log("sent");
 };
 
 let sendRefreshLenses = (log, output) => {
@@ -373,24 +364,18 @@ let sendRefreshLenses = (log, output) => {
     ]);
 
   let jsonMessage = Yojson.Basic.to_string(notification);
-  // log("sending message notification " ++ jsonMessage);
 
   send(output, jsonMessage);
 };
 
 let sendHover = (log, output, id: int, signature, range: range_t) => {
-  let rstart =
-    `Assoc([
-      ("line", `Int(range.start_line - 1)),
-      ("character", `Int(range.start_char)),
-    ]);
-  let rend =
-    `Assoc([
-      ("line", `Int(range.end_line - 1)),
-      ("character", `Int(range.end_char)),
-    ]);
+  let rstart: position = {
+    line: range.start_line - 1,
+    character: range.start_char,
+  };
 
-  let range = `Assoc([("start", rstart), ("end", rend)]);
+  let rend: position = {line: range.end_line - 1, character: range.end_char};
+  let range = range_to_yojson({start: rstart, range_end: rend});
 
   let hoverInfo =
     `Assoc([("contents", `String(signature)), ("range", range)]);
@@ -402,26 +387,20 @@ let sendHover = (log, output, id: int, signature, range: range_t) => {
       ("result", hoverInfo),
     ]);
 
-  let strJson = Yojson.Basic.pretty_to_string(res);
+  let strJson = Yojson.Safe.pretty_to_string(res);
 
-  // log("sending message " ++ strJson);
   send(output, strJson);
-  log("sent");
 };
 
 let sendGoToDefinition = (log, output, id: int, uri: string, range: range_t) => {
-  let rstart =
-    `Assoc([
-      ("line", `Int(range.start_line - 1)),
-      ("character", `Int(range.start_char)),
-    ]);
-  let rend =
-    `Assoc([
-      ("line", `Int(range.end_line - 1)),
-      ("character", `Int(range.end_char)),
-    ]);
+  let rstart: position = {
+    line: range.start_line - 1,
+    character: range.start_char,
+  };
 
-  let range = `Assoc([("start", rstart), ("end", rend)]);
+  let rend: position = {line: range.end_line - 1, character: range.end_char};
+  let range = range_to_yojson({start: rstart, range_end: rend});
+
   let location = `Assoc([("uri", `String(uri)), ("range", range)]);
 
   let res =
@@ -431,34 +410,14 @@ let sendGoToDefinition = (log, output, id: int, uri: string, range: range_t) => 
       ("result", location),
     ]);
 
-  let strJson = Yojson.Basic.pretty_to_string(res);
+  let strJson = Yojson.Safe.pretty_to_string(res);
 
-  log("sending message " ++ strJson);
   send(output, strJson);
-  log("sent");
-};
-
-type completionItem = {
-  label: string,
-  kind: int,
-  detail: string,
 };
 
 let sendCompletion =
     (log, output, id: int, completions: list(completionItem)) => {
-  let items =
-    List.map(
-      item => {
-        let sigInfo =
-          `Assoc([
-            ("label", `String(item.label)),
-            ("detail", `String(item.detail)),
-            ("kind", `Int(item.kind)),
-          ]);
-        sigInfo;
-      },
-      completions,
-    );
+  let items = List.map(item => completionItem_to_yojson(item), completions);
 
   let sigInfo =
     `Assoc([("isIncomplete", `Bool(false)), ("items", `List(items))]);
@@ -470,9 +429,7 @@ let sendCompletion =
       ("result", sigInfo),
     ]);
 
-  let strJson = Yojson.Basic.pretty_to_string(res);
+  let strJson = Yojson.Safe.pretty_to_string(res);
 
-  log("sending signature " ++ strJson);
   send(output, strJson);
-  log("sent");
 };
