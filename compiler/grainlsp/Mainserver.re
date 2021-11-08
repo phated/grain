@@ -35,7 +35,7 @@ let run = log => {
         | "textDocument/codeLens" =>
           Messages.processGetLenses(log, id, json, compiledCode)
         | "textDocument/completion" =>
-          Completion.processCompletion(log, id, json, compiledCode)
+          Completion.processCompletion(log, id, json, compiledCode, documents)
         | _ => ()
         };
         loop(~isShuttingDown, ~documents, ~compiledCode);
