@@ -1,7 +1,16 @@
 (library
  (name lsp)
  (public_name grainlsp.lsp)
- (modules lsp mainserver files notifications messages log utils rpc)
+ (modules
+  lsp
+  mainserver
+  files
+  notifications
+  messages
+  completion
+  log
+  utils
+  rpc)
  (libraries
   grain
   grain_diagnostics

@@ -32,6 +32,10 @@ let run = log => {
         switch (action) {
         | "textDocument/hover" =>
           Messages.getHover(log, id, json, compiledCode)
+        | "textDocument/codeLens" =>
+          Messages.processGetLenses(log, id, json, compiledCode)
+        | "textDocument/completion" =>
+          Completion.processCompletion(log, id, json, compiledCode)
         | _ => ()
         };
         loop(~isShuttingDown, ~documents, ~compiledCode);
