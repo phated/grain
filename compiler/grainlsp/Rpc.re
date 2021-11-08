@@ -373,7 +373,6 @@ let sendHover = (log, output, id: int, signature, range: range_t) => {
     line: range.start_line - 1,
     character: range.start_char,
   };
-
   let rend: position = {line: range.end_line - 1, character: range.end_char};
   let range = range_to_yojson({start: rstart, range_end: rend});
 
