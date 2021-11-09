@@ -314,3 +314,77 @@ let findBestMatch = (typed_program: Typedtree.typed_program, line, char) => {
     };
   loop(typed_program.statements);
 };
+
+let getNodeFromStmt =
+    (log, stmt: Grain_typed__Typedtree.toplevel_stmt, line, char) =>
+  switch (stmt.ttop_desc) {
+  | TTopImport(import_declaration) => NoNode("import declaration")
+  | TTopForeign(export_flag, value_description) => NoNode("foreign")
+  | TTopData(data_declarations) => NoNode("data declaration")
+  | TTopLet(export_flag, rec_flag, mut_flag, value_bindings) =>
+    log("@@@ TTopLet");
+    log("number of vbs is " ++ string_of_int(List.length(value_bindings)));
+    if (List.length(value_bindings) > 0) {
+      // let vbs: Typedtree.value_binding = List.hd(value_bindings);
+      // getHoverFromExpression(log, vbs.vb_expr, line, char);
+      let matches =
+        List.map(
+          (vb: Typedtree.value_binding) =>
+            getNodeFromExpression(log, vb.vb_expr, line, char),
+          value_bindings,
+        );
+      let filtered =
+        List.filter(
+          m =>
+            switch (m) {
+            | NoNode(_) => false
+            | _ => true
+            },
+          matches,
+        );
+      if (List.length(filtered) == 0) {
+        // return the type for the whole statement
+
+        let vb = List.hd(value_bindings);
+
+        let expr = vb.vb_expr;
+
+        Expression(expr);
+        //(lens_sig(expr.exp_type), Some(vb.vb_loc));
+        //   ("No TTOPLET match", None);
+      } else if (List.length(filtered) == 1) {
+        List.hd(filtered);
+      } else {
+        NoNode("Too many ttoplet matches");
+      };
+    } else {
+      NoNode("");
+    };
+
+  | TTopExpr(expression) =>
+    log("@@@ TTopExpr");
+    // let expr_type = expression.exp_type;
+
+    // lens_sig(expr_type);
+    getNodeFromExpression(log, expression, line, char);
+  | TTopException(export_flag, type_exception) => NoNode("exception")
+  | TTopExport(export_declarations) => NoNode("export")
+  };
+
+let rec print_ident = (ident: Identifier.t) => {
+  switch (ident) {
+  | IdentName(name) => name
+
+  | IdentExternal(externalIdent, second) =>
+    print_ident(externalIdent) ++ "." ++ second
+  };
+};
+
+let rec print_path = (ident: Path.t) => {
+  switch (ident) {
+  | PIdent(name) => name.name
+
+  | PExternal(externalIdent, second, _) =>
+    print_path(externalIdent) ++ "." ++ second
+  };
+};

@@ -28,9 +28,21 @@ let findCompletable = (text, offset) => {
   loop(offset - 1);
 };
 
+let rec getKind = (desc: Types.type_desc) =>
+  switch (desc) {
+  | TTyVar(_) => 6
+  | TTyArrow(_) => 3
+  | TTyTuple(_) => 22
+  | TTyRecord(_) => 22
+  | TTyConstr(_) => 4
+  | TTySubst(s) => getKind(s.desc)
+  | TTyLink(t) => getKind(t.desc)
+  | _ => 1
+  };
+
 let processCompletion =
     (
-      log,
+      log: string => unit,
       id,
       json,
       compiledCode: Stdlib__hashtbl.t(string, Typedtree.typed_program),
@@ -123,66 +135,72 @@ let processCompletion =
               let ident: Ident.t = {name: modName, stamp: 0, flags: 0};
               //let mod_ident: Path.t = PExternal(PIdent(ident), "", 0);
               let mod_ident: Path.t = PIdent(ident);
-              let lookup: Types.module_declaration =
-                Env.find_module(mod_ident, None, compiledCode.env);
-              switch (lookup.md_filepath) {
-              | None =>
-                log("no module path found");
-                [];
-              | Some(p) =>
-                log("found module at " ++ p);
-                let mtype: Grain_typed.Types.module_type = lookup.md_type;
-                switch (mtype) {
-                | TModSignature(sigs) =>
-                  let fnsigs =
-                    List.filter_map(
-                      (s: Types.signature_item) => {
-                        switch (s) {
-                        | TSigValue(ident, vd) =>
-                          let string_of_value_description =
-                              (~ident: Ident.t, vd) => {
-                            Format.asprintf(
-                              "%a",
-                              Printtyp.value_description(ident),
-                              vd,
-                            );
-                          };
-                          //  log(string_of_value_description(~ident, vd));
-                          let item: Rpc.completionItem = {
-                            label: ident.name,
-                            kind: 3,
-                            detail: string_of_value_description(~ident, vd),
-                          };
-                          Some(item);
 
-                        | TSigType(ident, td, recstatus) =>
-                          log("IS A TSigType");
-                          let string_of_type_declaration =
-                              (~ident: Ident.t, td) => {
-                            (
-                              ident.name,
+              // let lookup: Types.module_declaration =
+              switch (Env.find_module(mod_ident, None, compiledCode.env)) {
+              | lookup =>
+                switch (lookup.md_filepath) {
+                | None =>
+                  log("no module path found");
+                  [];
+                | Some(p) =>
+                  log("found module at " ++ p);
+                  let mtype: Grain_typed.Types.module_type = lookup.md_type;
+                  switch (mtype) {
+                  | TModSignature(sigs) =>
+                    let fnsigs =
+                      List.filter_map(
+                        (s: Types.signature_item) => {
+                          switch (s) {
+                          | TSigValue(ident, vd) =>
+                            let string_of_value_description =
+                                (~ident: Ident.t, vd) => {
                               Format.asprintf(
                                 "%a",
-                                Printtyp.type_declaration(ident),
-                                td,
-                              ),
-                            );
-                          };
-                          // log(string_of_type_declaration(~ident, td));
-                          None;
-                        | _ =>
-                          log("Not a TSigType");
-                          None;
-                        }
-                      },
-                      sigs,
-                    );
-                  fnsigs;
-                //Rpc.sendCompletion(log, stdout, id, fnsigs);
-                | _ =>
-                  log("not a TModSignature");
-                  [];
-                };
+                                Printtyp.value_description(ident),
+                                vd,
+                              );
+                            };
+                            //  log(string_of_value_description(~ident, vd));
+                            let item: Rpc.completionItem = {
+                              label: ident.name,
+                              kind: 3,
+                              detail: string_of_value_description(~ident, vd),
+                            };
+                            Some(item);
+
+                          | TSigType(ident, td, recstatus) =>
+                            log("IS A TSigType");
+                            let string_of_type_declaration =
+                                (~ident: Ident.t, td) => {
+                              (
+                                ident.name,
+                                Format.asprintf(
+                                  "%a",
+                                  Printtyp.type_declaration(ident),
+                                  td,
+                                ),
+                              );
+                            };
+                            // log(string_of_type_declaration(~ident, td));
+                            None;
+                          | _ =>
+                            log("Not a TSigType");
+                            None;
+                          }
+                        },
+                        sigs,
+                      );
+                    fnsigs;
+                  //Rpc.sendCompletion(log, stdout, id, fnsigs);
+                  | _ =>
+                    log("not a TModSignature");
+                    [];
+                  };
+                }
+              | exception _ =>
+                log("Module not found");
+                [];
               };
             } else {
               let modules = Env.get_all_modules(compiledCode.env);
@@ -210,7 +228,7 @@ let processCompletion =
                     | 'A' .. 'Z' =>
                       let item: Rpc.completionItem = {
                         label: i.name,
-                        kind: 12,
+                        kind: 9,
                         detail: Utils.lens_sig(l.val_type),
                       };
                       Some(item);
@@ -235,7 +253,7 @@ let processCompletion =
               ((i: Ident.t, l: Types.value_description)) => {
                 let item: Rpc.completionItem = {
                   label: i.name,
-                  kind: 12,
+                  kind: getKind(l.val_type.desc),
                   detail: Utils.lens_sig(l.val_type),
                 };
                 item;

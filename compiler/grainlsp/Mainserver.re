@@ -34,8 +34,12 @@ let run = log => {
           Messages.getHover(log, id, json, compiledCode)
         | "textDocument/codeLens" =>
           Messages.processGetLenses(log, id, json, compiledCode)
+        | "textDocument/definition" =>
+          Messages.gotoDefinition(log, id, json, compiledCode)
         | "textDocument/completion" =>
           Completion.processCompletion(log, id, json, compiledCode, documents)
+        | "textDocument/signatureHelp" =>
+          Messages.signatureHelp(log, id, json, compiledCode)
         | _ => ()
         };
         loop(~isShuttingDown, ~documents, ~compiledCode);

@@ -117,3 +117,68 @@ let getHover = (log, id, json, compiledCode) => {
   | _ => ()
   };
 };
+
+let gotoDefinition = (log, id, json, compiledCode) => {
+  log("@@@@  go to definition requested");
+  switch (getTextDocumenUriAndPosition(json)) {
+  | (Some(uri), Some(line), Some(char)) =>
+    let ln = line + 1;
+
+    let compiledCode = Hashtbl.find(compiledCode, uri);
+    let node = Utils.findBestMatch(compiledCode, ln, char);
+    switch (node) {
+    | Some(stmt) =>
+      let node = Utils.getNodeFromStmt(log, stmt, ln, char);
+      switch (node) {
+      | NoNode(err) => log(err)
+      | Expression(e) =>
+        let desc = e.exp_desc;
+        switch (desc) {
+        | TExpIdent(path, _, _) =>
+          let lookup = Env.find_value(path, compiledCode.env);
+
+          let loc = lookup.val_loc;
+          let (_, startline, startchar, _) =
+            Utils.get_raw_pos_info(loc.loc_start);
+
+          let txt = Utils.print_path(path);
+          log("!!!!!Expr defn for " ++ txt);
+          log(
+            "!!!!!start "
+            ++ string_of_int(startline)
+            ++ string_of_int(startchar),
+          );
+
+          let range = Utils.loc_to_range(loc);
+
+          Rpc.sendGoToDefinition(log, stdout, id, uri, range);
+
+        | _ => log("No defn")
+        };
+      | Pattern(p) => log("!!!!!Pattern defn")
+      };
+      ();
+    | _ => log("!!!! no defn match found")
+    };
+  | _ => log("!!!! params missing")
+  };
+};
+
+let signatureHelp = (log, id, json, compiledCode) => {
+  log("@@@@!!!@@@@@!!!@@  signature help requested");
+  switch (getTextDocumenUriAndPosition(json)) {
+  | (Some(uri), Some(line), Some(char)) =>
+    let ln = line + 1;
+
+    log("looking for code for " ++ uri);
+    if (!Hashtbl.mem(compiledCode, uri)) {
+      log("Can't find compiled code for " ++ uri);
+    } else {
+      let compiledCode = Hashtbl.find(compiledCode, uri);
+
+      let fnsigs = [];
+      Rpc.sendSignature(log, stdout, id, fnsigs);
+    };
+  | _ => log("!!!! params missing")
+  };
+};
