@@ -40,6 +40,33 @@ let rec getKind = (desc: Types.type_desc) =>
   | _ => 1
   };
 
+let getOriginalText = (log, documents, uri, line, char) =>
+  if (!Hashtbl.mem(documents, uri)) {
+    log("Can't find source code for " ++ uri);
+    Nothing;
+  } else {
+    log("looking up line " ++ string_of_int(line));
+    let sourceCode = Hashtbl.find(documents, uri);
+    // try and find the code we are completing in the original source
+
+    let lines = String.split_on_char('\n', sourceCode);
+
+    log("we have " ++ string_of_int(List.length(lines)) ++ " line of code");
+
+    let line = List.nth(lines, line);
+
+    log("matched line is " ++ line);
+
+    let completable = findCompletable(line, char);
+
+    let _ =
+      switch (completable) {
+      | Nothing => log("nothing completable found")
+      | Lident(ident) => log("Lets complete on " ++ ident)
+      };
+    completable;
+  };
+
 let processCompletion =
     (
       log: string => unit,
@@ -50,77 +77,24 @@ let processCompletion =
     ) => {
   log("@@@@!!!@@@@@!!!@@  completion  requested");
   log("\n\n\n\n\n\n");
-  let params = Yojson.Safe.Util.member("params", json);
+  switch (Utils.getTextDocumenUriAndPosition(json)) {
+  | (Some(uri), Some(line), Some(char)) =>
+    let ln = line + 1;
 
-  let textDocument = Yojson.Safe.Util.member("textDocument", params);
-  let position = Yojson.Safe.Util.member("position", params);
+    log("completing on line " ++ string_of_int(line));
+    log("completing at char " ++ string_of_int(char));
 
-  let uri =
-    Yojson.Safe.Util.member("uri", textDocument)
-    |> Yojson.Safe.Util.to_string_option;
-
-  let line =
-    Yojson.Safe.Util.member("line", position)
-    |> Yojson.Safe.Util.to_int_option;
-
-  let char =
-    Yojson.Safe.Util.member("character", position)
-    |> Yojson.Safe.Util.to_int_option;
-
-  let context = Yojson.Safe.Util.member("context", json);
-
-  switch (uri) {
-  | Some(u) => log("URI is " ++ u)
-  | None => log("uri not found")
-  };
-
-  switch (uri, line, char) {
-  | (Some(u), Some(l), Some(c)) =>
-    let ln = l + 1;
-
-    log("completing on line " ++ string_of_int(l));
-    log("completing at char " ++ string_of_int(c));
-
-    let completable =
-      if (!Hashtbl.mem(documents, u)) {
-        log("Can't find source code for " ++ u);
-        Nothing;
-      } else {
-        log("looking up line");
-        let sourceCode = Hashtbl.find(documents, u);
-        // try and find the code we are completing in the original source
-
-        let lines = String.split_on_char('\n', sourceCode);
-
-        log(
-          "we have " ++ string_of_int(List.length(lines)) ++ " line of code",
-        );
-
-        let line = List.nth(lines, l);
-
-        log("\n\n\n@@@@@ editing on line " ++ line);
-
-        //UNICODE??  FIX ME
-
-        let completable = findCompletable(line, c);
-
-        let _ =
-          switch (completable) {
-          | Nothing => log("nothing completable found")
-          | Lident(ident) => log("Lets complete on " ++ ident)
-          };
-        completable;
-      };
+    let completable = getOriginalText(log, documents, uri, line, char);
 
     switch (completable) {
     | Nothing => log("Nothing to complete")
     | Lident(text) =>
       log("Completing " ++ text);
-      log("looking for code for " ++ u);
-      if (!Hashtbl.mem(compiledCode, u)) {
-        log("Can't find compiled code for " ++ u);
+      log("looking for code for " ++ uri);
+      if (!Hashtbl.mem(compiledCode, uri)) {
+        log("Can't find compiled code for " ++ uri);
       } else {
-        let compiledCode = Hashtbl.find(compiledCode, u);
+        let compiledCode = Hashtbl.find(compiledCode, uri);
 
         let firstChar = text.[0];
 

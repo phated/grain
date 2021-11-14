@@ -39,7 +39,8 @@ let run = log => {
         | "textDocument/completion" =>
           Completion.processCompletion(log, id, json, compiledCode, documents)
         | "textDocument/signatureHelp" =>
-          Messages.signatureHelp(log, id, json, compiledCode)
+          Messages.signatureHelp(log, id, json, compiledCode, documents)
+
         | _ => ()
         };
         loop(~isShuttingDown, ~documents, ~compiledCode);

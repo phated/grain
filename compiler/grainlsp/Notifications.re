@@ -7,7 +7,7 @@ open Grain_typed;
 let compileSrc = (log, uri, source) => {
   log("Compiling the source for " ++ uri);
 
-  let filename = "hello.gr"; // extract from uri
+  let filename = Filename.basename(uri);
 
   Grain_utils.Config.stdlib_dir := Some("/Users/marcus/Projects/grain/stdlib");
   switch (

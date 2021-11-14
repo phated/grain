@@ -1,26 +1,9 @@
+open Grain;
+open Compile;
+open Grain_parsing;
+open Grain_utils;
 open Grain_typed;
-
-let getTextDocumenUriAndPosition = json => {
-  let params = Yojson.Safe.Util.member("params", json);
-
-  let textDocument = Yojson.Safe.Util.member("textDocument", params);
-
-  let position = Yojson.Safe.Util.member("position", params);
-
-  let uri =
-    Yojson.Safe.Util.member("uri", textDocument)
-    |> Yojson.Safe.Util.to_string_option;
-
-  let line =
-    Yojson.Safe.Util.member("line", position)
-    |> Yojson.Safe.Util.to_int_option;
-
-  let char =
-    Yojson.Safe.Util.member("character", position)
-    |> Yojson.Safe.Util.to_int_option;
-
-  (uri, line, char);
-};
+open Grain_diagnostics;
 
 let getSigFromStmt = (stmt: Grain_typed__Typedtree.toplevel_stmt) =>
   switch (stmt.ttop_desc) {
@@ -65,7 +48,6 @@ let getLenses = (typed_program: Typedtree.typed_program) => {
     },
     stmts,
   );
-  // Rpc.sendRefreshLenses(log, stdout);
   lenses^;
 };
 
@@ -91,7 +73,7 @@ let processGetLenses = (log, id, json, compiledCode) => {
 };
 
 let getHover = (log, id, json, compiledCode) => {
-  switch (getTextDocumenUriAndPosition(json)) {
+  switch (Utils.getTextDocumenUriAndPosition(json)) {
   | (Some(uri), Some(line), Some(char)) =>
     if (Hashtbl.mem(compiledCode, uri)) {
       let ln = line + 1;
@@ -120,7 +102,7 @@ let getHover = (log, id, json, compiledCode) => {
 
 let gotoDefinition = (log, id, json, compiledCode) => {
   log("@@@@  go to definition requested");
-  switch (getTextDocumenUriAndPosition(json)) {
+  switch (Utils.getTextDocumenUriAndPosition(json)) {
   | (Some(uri), Some(line), Some(char)) =>
     let ln = line + 1;
 
@@ -164,20 +146,192 @@ let gotoDefinition = (log, id, json, compiledCode) => {
   };
 };
 
-let signatureHelp = (log, id, json, compiledCode) => {
+let compile_typed = (log, filename) => {
+  Grain_utils.Config.base_path := "/Users/marcus/Projects/grain";
+  Grain_utils.Config.stdlib_dir := Some("/Users/marcus/Projects/grain/stdlib");
+
+  switch (Compile.compile_file(~hook=stop_after_typed, filename)) {
+  | exception exn =>
+    log("Exception");
+    let bt =
+      if (Printexc.backtrace_status()) {
+        Some(Printexc.get_backtrace());
+      } else {
+        None;
+      };
+    Grain_parsing.Location.report_exception(Format.err_formatter, exn);
+    Option.iter(
+      s =>
+        if (Grain_utils.Config.debug^) {
+          prerr_string("Backtrace:\n");
+          prerr_string(s);
+          prerr_string("\n");
+          log(s);
+          log("\n");
+        },
+      bt,
+    );
+    None;
+  | {cstate_desc: TypeChecked(typed_program)} => Some(typed_program)
+  | _ =>
+    log("Invalid compilation state");
+    None; // failwith("Invalid compilation state")
+  };
+};
+
+let signatureHelp =
+    (
+      log,
+      id,
+      json,
+      compiledCode:
+        Stdlib__hashtbl.t(string, Grain_typed__Typedtree.typed_program),
+      documents,
+    ) => {
   log("@@@@!!!@@@@@!!!@@  signature help requested");
-  switch (getTextDocumenUriAndPosition(json)) {
+  switch (Utils.getTextDocumenUriAndPosition(json)) {
   | (Some(uri), Some(line), Some(char)) =>
     let ln = line + 1;
 
-    log("looking for code for " ++ uri);
-    if (!Hashtbl.mem(compiledCode, uri)) {
-      log("Can't find compiled code for " ++ uri);
-    } else {
-      let compiledCode = Hashtbl.find(compiledCode, uri);
+    let completable =
+      Completion.getOriginalText(log, documents, uri, line, char - 1);
 
-      let fnsigs = [];
-      Rpc.sendSignature(log, stdout, id, fnsigs);
+    switch (completable) {
+    | Nothing => log("no completable code found")
+    | Lident(text) =>
+      log("looking for code for " ++ uri);
+      // if (!Hashtbl.mem(compiledCode, uri)) {
+      //   log("Can't find compiled code for " ++ uri);
+      // } else {
+      //   let compiledCode = Hashtbl.find(compiledCode, uri);
+
+      //   let sige = compiledCode.signature;
+      //   let signature_items = compiledCode.signature.cmi_sign;
+
+      //   let _ =
+      //     List.map(
+      //       (si: Types.signature_item) => {
+      //         switch (si) {
+      //         | TSigType(ident, decl, recv) => log("TSigType " ++ ident.name)
+      //         | TSigValue(ident, desc) => log("TSigValue " ++ ident.name)
+      //         | TSigTypeExt(_) => log("TSigTypeExt")
+      //         | TSigModule(_) => log("TSigModule")
+      //         | TSigModType(_) => log("TSigModType")
+      //         }
+      //       },
+      //       signature_items,
+      //     );
+
+      //   // let values: list((Ident.t, Types.value_description)) =
+      //   //   Env.get_all_values(log, compiledCode.env);
+
+      //   // log("we have " ++ string_of_int(List.length(values)) ++ " values");
+
+      //   // let matches =
+      //   //   List.filter_map(
+      //   //     ((i: Ident.t, l: Types.value_description)) => {
+      //   //       let vk = l.val_kind;
+
+      //   //       if (i.name == text) {
+      //   //         log("!!!matching on " ++ i.name);
+      //   //         // switch (vk) {
+      //   //         // | TValReg => log("TValReg")
+      //   //         // | TValPrim(_) => log("TValPrim")
+      //   //         // | TValUnbound(_) => log("TValUnbound")
+      //   //         // | TValConstructor(_) => log("TValConstructor")
+      //   //         // };
+
+      //   //         log("full path " ++ Utils.print_path(l.val_fullpath));
+
+      //   //         let tt = Env.find_type(l.val_fullpath, compiledCode.env);
+
+      //   //         log(
+      //   //           "Type has "
+      //   //           ++ string_of_int(List.length(tt.type_params))
+      //   //           ++ " params",
+      //   //         );
+
+      //   //         Some(Utils.lens_sig(l.val_type));
+      //   //       } else {
+      //   //         None;
+      //   //       };
+      //   //     },
+      //   //     values,
+      //   //   );
+
+      //   let matches = [];
+      //   Rpc.sendSignature(log, stdout, id, matches);
+      // };
+
+      log("lets compile the module");
+      let cpOpt =
+        compile_typed(log, "/Users/marcus/Projects/grain/stdlib/result.gr");
+
+      switch (cpOpt) {
+      | None => log("Couldn't compile module")
+      | Some(program) =>
+        log("Ready to generate docs");
+
+        Comments.setup_comments(program.comments);
+
+        let env = program.env;
+        let signature_items = program.signature.cmi_sign;
+
+        //   let signature_items = compiledCode.signature.cmi_sign;
+
+        let _ =
+          List.map(
+            (si: Types.signature_item) => {
+              switch (si) {
+              | TSigType(ident, decl, recv) => log("TSigType " ++ ident.name)
+              | TSigValue(ident, desc) =>
+                log("TSigValue " ++ ident.name);
+                if (ident.name == "expect") {
+                  let docblock = Docblock.for_signature_item(~env, si);
+                  switch (docblock) {
+                  | Some(docblock) =>
+                    log("Found a matching docblock");
+
+                    //let sig =
+
+                    let sign =
+                      docblock.module_name
+                      ++ ":"
+                      ++ docblock.name
+                      ++ " = "
+                      ++ docblock.type_sig;
+
+                    let pms =
+                      List.fold_left(
+                        (acc, a) =>
+                          switch ((a: Grain_diagnostics.Comments.Attribute.t)) {
+                          | Param(p) =>
+                            acc ++ p.attr_name ++ " " ++ p.attr_desc ++ " "
+                          | _ => acc
+                          },
+                        "",
+                        docblock.attributes,
+                      );
+
+                    Rpc.sendSignature(log, stdout, id, [pms]);
+
+                  | None => log("Found no matching doc block")
+                  };
+                } else {
+                  ();
+                };
+              | TSigTypeExt(_) => log("TSigTypeExt")
+              | TSigModule(_) => log("TSigModule")
+              | TSigModType(_) => log("TSigModType")
+              }
+            },
+            signature_items,
+          );
+
+        ();
+      };
+
+      ();
     };
   | _ => log("!!!! params missing")
   };

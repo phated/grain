@@ -219,7 +219,7 @@ let sendSignature = (log, output, id: int, sigs: list(string)) => {
       s => {
         let sigInfo =
           `Assoc([
-            ("label", `String("someval")),
+            ("label", `String(s)),
             ("detail", `String(s)),
             // (
             //   "documentation",
@@ -246,6 +246,7 @@ let sendSignature = (log, output, id: int, sigs: list(string)) => {
 
   let strJson = Yojson.Basic.pretty_to_string(res);
 
+  log(strJson);
   send(output, strJson);
 };
 

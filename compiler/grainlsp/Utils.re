@@ -388,3 +388,25 @@ let rec print_path = (ident: Path.t) => {
     print_path(externalIdent) ++ "." ++ second
   };
 };
+
+let getTextDocumenUriAndPosition = json => {
+  let params = Yojson.Safe.Util.member("params", json);
+
+  let textDocument = Yojson.Safe.Util.member("textDocument", params);
+
+  let position = Yojson.Safe.Util.member("position", params);
+
+  let uri =
+    Yojson.Safe.Util.member("uri", textDocument)
+    |> Yojson.Safe.Util.to_string_option;
+
+  let line =
+    Yojson.Safe.Util.member("line", position)
+    |> Yojson.Safe.Util.to_int_option;
+
+  let char =
+    Yojson.Safe.Util.member("character", position)
+    |> Yojson.Safe.Util.to_int_option;
+
+  (uri, line, char);
+};
