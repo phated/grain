@@ -112,7 +112,8 @@ let gotoDefinition = (log, id, json, compiledCode) => {
     | Some(stmt) =>
       let node = Utils.getNodeFromStmt(log, stmt, ln, char);
       switch (node) {
-      | NoNode(err) => log(err)
+      | Error(err) => log(err)
+      | NotInRange => log("Not in range 3")
       | Expression(e) =>
         let desc = e.exp_desc;
         switch (desc) {

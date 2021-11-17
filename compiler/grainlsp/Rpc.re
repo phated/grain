@@ -5,7 +5,10 @@ type completionValues = {
 };
 
 [@deriving yojson]
-type signatureHelpers = {triggerCharacters: list(string)};
+type signatureHelpers = {
+  triggerCharacters: list(string),
+  retriggerCharacters: list(string),
+};
 
 [@deriving yojson]
 type codeValues = {resolveProvider: bool};
@@ -82,7 +85,7 @@ let readMessage = (log, input): protocolMsg => {
     let buffer = Buffer.create(num);
     Buffer.add_channel(buffer, input, num);
     let raw = Buffer.contents(buffer);
-    //log("Read message " ++ raw);
+    log("Read message " ++ raw);
 
     let json = Yojson.Safe.from_string(raw);
 
@@ -155,7 +158,10 @@ let sendError = (log, output, id: int) => {
 };
 
 let sendCapabilities = (log, output, id: int) => {
-  let sigHelpers: signatureHelpers = {triggerCharacters: ["("]};
+  let sigHelpers: signatureHelpers = {
+    triggerCharacters: ["("],
+    retriggerCharacters: [","],
+  };
 
   let completionVals: completionValues = {
     resolveProvider: true,
@@ -217,10 +223,22 @@ let sendSignature = (log, output, id: int, sigs: list(string)) => {
   let sigInfos =
     List.map(
       s => {
+        let param1 =
+          `Assoc([
+            ("label", `String("param 1")),
+            ("documentation", `String("documentation for param 1")),
+          ]);
+        let param2 =
+          `Assoc([
+            ("label", `String("param 2")),
+            ("documentation", `String("documentation for param 2")),
+          ]);
         let sigInfo =
           `Assoc([
-            ("label", `String(s)),
-            ("detail", `String(s)),
+            ("label", `String("a label")),
+            ("documentation", `String("documentation")),
+            ("parameters", `List([param1, param2])),
+            ("activeParameter", `Int(1)),
             // (
             //   "documentation",
             //   `String("Number addition. Left-associative operator"),
@@ -235,6 +253,8 @@ let sendSignature = (log, output, id: int, sigs: list(string)) => {
     `Assoc([
       ("isIncomplete", `Bool(false)),
       ("signatures", `List(sigInfos)),
+      ("activeSignature", `Int(0)),
+      ("activeParameter", `Int(1)),
     ]);
 
   let res =

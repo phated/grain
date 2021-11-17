@@ -7,7 +7,8 @@ open Grain_typed;
 type node_t =
   | Expression(Typedtree.expression)
   | Pattern(Typedtree.pattern)
-  | NoNode(string);
+  | NotInRange
+  | Error(string);
 
 let get_raw_pos_info = (pos: Lexing.position) => (
   pos.pos_fname,
@@ -87,6 +88,15 @@ let lens_sig = (t: Types.type_expr) => {
   sigStr;
 };
 
+let print_expr = (~t: Types.type_expr) => {
+  let buf = Buffer.create(64);
+  let ppf = Format.formatter_of_buffer(buf);
+  Printtyp.type_expr(ppf, t);
+  Format.pp_print_flush(ppf, ());
+  let sigStr = Buffer.contents(buf);
+  sigStr;
+};
+
 let rec getNodeFromPattern = (log, pattern: Typedtree.pattern, line, char) => {
   switch (pattern.pat_desc) {
   | TPatTuple(args) =>
@@ -101,84 +111,133 @@ let rec getNodeFromPattern = (log, pattern: Typedtree.pattern, line, char) => {
       let p = List.hd(pats);
       Pattern(p);
     } else {
-      NoNode("");
+      Error("");
     };
   | TPatConstant(c) => Pattern(pattern)
   | TPatVar(v, _) => Pattern(pattern)
-  | _ => NoNode("Pattern")
+  | _ => Error("Pattern")
   };
 };
 
 let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) => {
-  switch (expr.exp_desc) {
-  | TExpLet(rec_flag, mut_flag, vbs) =>
-    if (List.length(vbs) > 0) {
-      let matches =
-        List.map(
-          (vb: Typedtree.value_binding) =>
-            getNodeFromExpression(log, vb.vb_expr, line, char),
-          vbs,
-        );
-      let filtered =
-        List.filter(
-          m =>
-            switch (m) {
-            | NoNode(_) => false
-            | _ => true
-            },
-          matches,
-        );
-      if (List.length(filtered) == 0) {
-        // return the type for the whole statement
+  let node =
+    switch (expr.exp_desc) {
+    | TExpLet(rec_flag, mut_flag, vbs) =>
+      if (List.length(vbs) > 0) {
+        let matches =
+          List.map(
+            (vb: Typedtree.value_binding) =>
+              getNodeFromExpression(log, vb.vb_expr, line, char),
+            vbs,
+          );
+        let filtered =
+          List.filter(
+            m =>
+              switch (m) {
+              | Error(_) => false
+              | _ => true
+              },
+            matches,
+          );
+        if (List.length(filtered) == 0) {
+          // return the type for the whole statement
 
-        let vb = List.hd(vbs);
+          let vb = List.hd(vbs);
 
-        let expr = vb.vb_expr;
+          let expr = vb.vb_expr;
 
-        Expression(expr);
-      } else if (List.length(filtered) == 1) {
-        List.hd(filtered);
+          Expression(expr);
+        } else if (List.length(filtered) == 1) {
+          List.hd(filtered);
+        } else {
+          Error("Too many let matches");
+        };
       } else {
-        NoNode("Too many let matches");
-      };
-    } else {
-      NoNode("");
-    }
-  | TExpBlock(expressions) =>
-    log(
-      "TExpBlock has  "
-      ++ string_of_int(List.length(expressions))
-      ++ " expressions",
-    );
-    if (List.length(expressions) > 0) {
-      let exps =
-        List.filter(
-          (e: Typedtree.expression) =>
-            is_point_inside_location(log, e.exp_loc, line, char),
-          expressions,
-        );
-
+        Error("");
+      }
+    | TExpBlock(expressions) =>
       log(
         "TExpBlock has  "
-        ++ string_of_int(List.length(exps))
-        ++ " matching expressions",
+        ++ string_of_int(List.length(expressions))
+        ++ " expressions",
       );
-      if (List.length(exps) == 0) {
-        NoNode("No block matches");
-      } else if (List.length(exps) == 1) {
-        let expr = List.hd(exps);
-        getNodeFromExpression(log, expr, line, char);
-      } else {
-        NoNode(string_of_int(List.length(exps)) ++ " block matches");
-      };
-    } else {
-      NoNode("");
-    };
+      if (List.length(expressions) > 0) {
+        let exps =
+          List.filter(
+            (e: Typedtree.expression) =>
+              is_point_inside_location(log, e.exp_loc, line, char),
+            expressions,
+          );
 
-  | TExpApp(func, expressions) =>
-    if (is_point_inside_location(log, func.exp_loc, line, char)) {
-      Expression(func);
-    } else if (List.length(expressions) > 0) {
+        log(
+          "TExpBlock has  "
+          ++ string_of_int(List.length(exps))
+          ++ " matching expressions",
+        );
+        if (List.length(exps) == 0) {
+          NotInRange//   ("No block matches");
+                    ; // Error
+                    //Expression(expr);
+        } else if (List.length(exps) == 1) {
+          let expr = List.hd(exps);
+          getNodeFromExpression(log, expr, line, char);
+        } else {
+          Error(string_of_int(List.length(exps)) ++ " block matches");
+        };
+      } else {
+        Error("");
+      };
+
+    | TExpApp(func, expressions) =>
+      if (is_point_inside_location(log, func.exp_loc, line, char)) {
+        Expression(func);
+      } else if (List.length(expressions) > 0) {
+        let exps =
+          List.filter(
+            (e: Typedtree.expression) =>
+              is_point_inside_location(log, e.exp_loc, line, char),
+            expressions,
+          );
+
+        if (List.length(exps) == 0) {
+          Error("No fn app matches");
+        } else if (List.length(exps) == 1) {
+          let expr = List.hd(exps);
+          Expression(expr);
+        } else {
+          Error(
+            string_of_int(List.length(exps)) ++ "Multiple fn app matches",
+          );
+        };
+      } else {
+        Error("");
+      }
+    | TExpLambda([{mb_pat: pattern, mb_body: body}], _) =>
+      let node = getNodeFromPattern(log, pattern, line, char);
+      switch (node) {
+      | Error(_) => getNodeFromExpression(log, body, line, char)
+      | _ => node
+      };
+    | TExpIf(cond, trueexp, falseexp) =>
+      // let node = getNodeFromExpression(log, cond, line, char);
+
+      let condNode = getNodeFromExpression(log, cond, line, char);
+
+      let trueMatch =
+        switch (condNode) {
+        | NotInRange
+        | Error(_) => getNodeFromExpression(log, trueexp, line, char)
+        | _ => condNode
+        };
+
+      switch (trueMatch) {
+      | NotInRange
+      | Error(_) => getNodeFromExpression(log, falseexp, line, char)
+      | _ => trueMatch
+      };
+
+    | TExpArray(expressions)
+    | TExpTuple(expressions) =>
       let exps =
         List.filter(
           (e: Typedtree.expression) =>
@@ -187,50 +246,44 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
         );
 
       if (List.length(exps) == 0) {
-        NoNode("No fn app matches");
+        Error("No match");
       } else if (List.length(exps) == 1) {
         let expr = List.hd(exps);
         Expression(expr);
       } else {
-        NoNode(
-          string_of_int(List.length(exps)) ++ "Multiple fn app matches",
-        );
+        Error(string_of_int(List.length(exps)) ++ "Multiple matches");
       };
-    } else {
-      NoNode("");
-    }
-  | TExpLambda([{mb_pat: pattern, mb_body: body}], _) =>
-    let node = getNodeFromPattern(log, pattern, line, char);
-    switch (node) {
-    | NoNode(_) => getNodeFromExpression(log, body, line, char)
-    | _ => node
-    };
 
-  | TExpLambda([], _) => failwith("Impossible: transl_imm: Empty lambda")
-  | TExpLambda(_, _) => failwith("NYI: transl_imm: Multi-branch lambda")
-  | TExpContinue => NoNode("TExpContinue")
-  | TExpBreak => NoNode("TExpBreak")
-  | TExpNull => NoNode("TExpNull")
-  | TExpIdent(_) => NoNode("TExpIdent")
-  | TExpConstant(const) => Expression(expr)
-  | TExpTuple(_) => NoNode("TExpTuple")
-  | TExpArray(_) => NoNode("TExpArray")
-  | TExpArrayGet(_) => NoNode("TExpArrayGet")
-  | TExpArraySet(_) => NoNode("TExpArraySet")
-  | TExpRecord(_) => NoNode("TExpRecord")
-  | TExpRecordGet(_) => NoNode("TExpRecordGet")
-  | TExpRecordSet(_) => NoNode("TExpRecordSet")
-  | TExpMatch(_) => NoNode("TExpMatch")
-  | TExpPrim1(_) => NoNode("TExpPrim1")
-  | TExpPrim2(_) => NoNode("TExpPrim2")
-  | TExpPrimN(_) => NoNode("TExpPrimN")
-  | TExpBoxAssign(_) => NoNode("TExpBoxAssign")
-  | TExpAssign(_) => NoNode("TExpAssign")
-  | TExpIf(_) => NoNode("TExpIf")
-  | TExpWhile(_) => NoNode("TExpWhile")
-  | TExpFor(_) => NoNode("TExpFor")
-  | TExpConstruct(_) => NoNode("TExpConstruct")
-  };
+    | TExpLambda([], _) => failwith("Impossible: transl_imm: Empty lambda")
+    | TExpLambda(_, _) => failwith("NYI: transl_imm: Multi-branch lambda")
+    | TExpContinue => Error("TExpContinue")
+    | TExpBreak => Error("TExpBreak")
+    | TExpNull => Error("TExpNull")
+    | TExpIdent(_) => Error("TExpIdent")
+    | TExpConstant(const) =>
+      if (is_point_inside_location(log, expr.exp_loc, line, char)) {
+        Expression(expr);
+      } else {
+        NotInRange;
+      }
+
+    | TExpArrayGet(_) => Error("TExpArrayGet")
+    | TExpArraySet(_) => Error("TExpArraySet")
+    | TExpRecord(_) => Error("TExpRecord")
+    | TExpRecordGet(_) => Error("TExpRecordGet")
+    | TExpRecordSet(_) => Error("TExpRecordSet")
+    | TExpMatch(_) => Error("TExpMatch")
+    | TExpPrim1(_) => Error("TExpPrim1")
+    | TExpPrim2(_) => Error("TExpPrim2")
+    | TExpPrimN(_) => Error("TExpPrimN")
+    | TExpBoxAssign(_) => Error("TExpBoxAssign")
+    | TExpAssign(_) => Error("TExpAssign")
+
+    | TExpWhile(_) => Error("TExpWhile")
+    | TExpFor(_) => Error("TExpFor")
+    | TExpConstruct(_) => Error("TExpConstruct")
+    };
+  node;
 };
 
 let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
@@ -254,7 +307,8 @@ let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
         List.filter(
           m =>
             switch (m) {
-            | NoNode(_) => false
+            | Error(_) => false
+            | NotInRange => false
             | _ => true
             },
           matches,
@@ -266,11 +320,14 @@ let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
 
         let expr = vb.vb_expr;
 
-        (lens_sig(expr.exp_type), Some(vb.vb_loc));
+        // (lens_sig(expr.exp_type), Some(vb.vb_loc));
+
+        ("no match 44", Some(vb.vb_loc));
       } else if (List.length(filtered) == 1) {
         let node = List.hd(filtered);
         switch (node) {
-        | NoNode(err) => (err, None)
+        | Error(err) => (err, None)
+        | NotInRange => ("Not in range", None)
         | Expression(e) => (lens_sig(e.exp_type), Some(e.exp_loc))
         | Pattern(p) => (lens_sig(p.pat_type), Some(p.pat_loc))
         };
@@ -288,10 +345,15 @@ let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
     // lens_sig(expr_type);
     let node = getNodeFromExpression(log, expression, line, char);
     switch (node) {
-    | NoNode(err) => (err, None)
+    | Error(err) => (err, None)
+    | NotInRange => (
+        lens_sig(expression.exp_type),
+        Some(expression.exp_loc),
+      )
     | Expression(e) => (lens_sig(e.exp_type), Some(e.exp_loc))
     | Pattern(p) => (lens_sig(p.pat_type), Some(p.pat_loc))
     };
+
   | TTopException(export_flag, type_exception) => ("exception", None)
   | TTopExport(export_declarations) => ("export", None)
   };
@@ -318,9 +380,9 @@ let findBestMatch = (typed_program: Typedtree.typed_program, line, char) => {
 let getNodeFromStmt =
     (log, stmt: Grain_typed__Typedtree.toplevel_stmt, line, char) =>
   switch (stmt.ttop_desc) {
-  | TTopImport(import_declaration) => NoNode("import declaration")
-  | TTopForeign(export_flag, value_description) => NoNode("foreign")
-  | TTopData(data_declarations) => NoNode("data declaration")
+  | TTopImport(import_declaration) => Error("import declaration")
+  | TTopForeign(export_flag, value_description) => Error("foreign")
+  | TTopData(data_declarations) => Error("data declaration")
   | TTopLet(export_flag, rec_flag, mut_flag, value_bindings) =>
     log("@@@ TTopLet");
     log("number of vbs is " ++ string_of_int(List.length(value_bindings)));
@@ -337,7 +399,7 @@ let getNodeFromStmt =
         List.filter(
           m =>
             switch (m) {
-            | NoNode(_) => false
+            | Error(_) => false
             | _ => true
             },
           matches,
@@ -355,10 +417,10 @@ let getNodeFromStmt =
       } else if (List.length(filtered) == 1) {
         List.hd(filtered);
       } else {
-        NoNode("Too many ttoplet matches");
+        Error("Too many ttoplet matches");
       };
     } else {
-      NoNode("");
+      Error("");
     };
 
   | TTopExpr(expression) =>
@@ -367,8 +429,8 @@ let getNodeFromStmt =
 
     // lens_sig(expr_type);
     getNodeFromExpression(log, expression, line, char);
-  | TTopException(export_flag, type_exception) => NoNode("exception")
-  | TTopExport(export_declarations) => NoNode("export")
+  | TTopException(export_flag, type_exception) => Error("exception")
+  | TTopExport(export_declarations) => Error("export")
   };
 
 let rec print_ident = (ident: Identifier.t) => {
