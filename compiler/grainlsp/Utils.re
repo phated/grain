@@ -3,6 +3,7 @@ open Compile;
 open Grain_parsing;
 open Grain_utils;
 open Grain_typed;
+open Grain_diagnostics;
 
 type node_t =
   | Expression(Typedtree.expression)
@@ -119,10 +120,34 @@ let rec getNodeFromPattern = (log, pattern: Typedtree.pattern, line, char) => {
   };
 };
 
+let print_loc = (msg: string, loc: Grain_parsing.Location.t) => {
+  let (file, line, startchar, _) = Locations.get_raw_pos_info(loc.loc_start);
+  let (_, endline, endchar, _) = Locations.get_raw_pos_info(loc.loc_end);
+
+  if (startchar >= 0) {
+    if (line == endline) {
+      Printf.sprintf("%s %d:%d,%d\n", msg, line, startchar, endchar);
+    } else {
+      Printf.sprintf(
+        "%s %d:%d - %d:%d\n",
+        msg,
+        line,
+        startchar,
+        endline,
+        endchar,
+      );
+    };
+  } else {
+    "start char fail";
+  };
+};
+
 let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) => {
+  log("nodexpr " ++ string_of_int(line) ++ " " ++ string_of_int(char));
   let node =
     switch (expr.exp_desc) {
     | TExpLet(rec_flag, mut_flag, vbs) =>
+      log("TExpLet");
       if (List.length(vbs) > 0) {
         let matches =
           List.map(
@@ -154,13 +179,8 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
         };
       } else {
         Error("");
-      }
+      };
     | TExpBlock(expressions) =>
-      log(
-        "TExpBlock has  "
-        ++ string_of_int(List.length(expressions))
-        ++ " expressions",
-      );
       if (List.length(expressions) > 0) {
         let exps =
           List.filter(
@@ -168,16 +188,8 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
               is_point_inside_location(log, e.exp_loc, line, char),
             expressions,
           );
-
-        log(
-          "TExpBlock has  "
-          ++ string_of_int(List.length(exps))
-          ++ " matching expressions",
-        );
         if (List.length(exps) == 0) {
-          NotInRange//   ("No block matches");
-                    ; // Error
-                    //Expression(expr);
+          NotInRange;
         } else if (List.length(exps) == 1) {
           let expr = List.hd(exps);
           getNodeFromExpression(log, expr, line, char);
@@ -186,7 +198,7 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
         };
       } else {
         Error("");
-      };
+      }
 
     | TExpApp(func, expressions) =>
       if (is_point_inside_location(log, func.exp_loc, line, char)) {
@@ -219,8 +231,6 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
       | _ => node
       };
     | TExpIf(cond, trueexp, falseexp) =>
-      // let node = getNodeFromExpression(log, cond, line, char);
-
       let condNode = getNodeFromExpression(log, cond, line, char);
 
       let trueMatch =
@@ -283,7 +293,17 @@ let rec getNodeFromExpression = (log, expr: Typedtree.expression, line, char) =>
     | TExpFor(_) => Error("TExpFor")
     | TExpConstruct(_) => Error("TExpConstruct")
     };
-  node;
+
+  switch (node) {
+  | NotInRange
+  | Error(_) =>
+    if (is_point_inside_location(log, expr.exp_loc, line, char)) {
+      Expression(expr);
+    } else {
+      NotInRange;
+    }
+  | _ => node
+  };
 };
 
 let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
@@ -320,9 +340,7 @@ let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
 
         let expr = vb.vb_expr;
 
-        // (lens_sig(expr.exp_type), Some(vb.vb_loc));
-
-        ("no match 44", Some(vb.vb_loc));
+        (lens_sig(expr.exp_type), Some(vb.vb_loc));
       } else if (List.length(filtered) == 1) {
         let node = List.hd(filtered);
         switch (node) {
@@ -340,9 +358,7 @@ let getHoverFromStmt = (log, stmt: Typedtree.toplevel_stmt, line, char) =>
 
   | TTopExpr(expression) =>
     log("@@@ TTopExpr");
-    // let expr_type = expression.exp_type;
 
-    // lens_sig(expr_type);
     let node = getNodeFromExpression(log, expression, line, char);
     switch (node) {
     | Error(err) => (err, None)
