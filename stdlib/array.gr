@@ -913,8 +913,7 @@ export let rotate = (n, arr) => {
   let rec gcd = (a, b) => {
     if (b == 0) {
       a
-    }
-    else{
+    } else {
       gcd(b, a % b)
     }
   }
