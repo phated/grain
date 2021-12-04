@@ -417,12 +417,17 @@ let rec block_item_iterator =
 
       let bcb = before_comments_break(previous, comments_between);
 
+      
+
+
       let block_push =
         if (isBlock) {
           switch (comments_between) {
           | [] =>
             if (this_line - bracket_line > 1) {
-              Doc.hardLine;
+              print_endline("this line is " ++ string_of_int(this_line))
+            print_endline("bracket_line is " ++ string_of_int(bracket_line))
+              Doc.text("hardLine");
             } else {
               Doc.nil;
             }
@@ -540,6 +545,7 @@ let rec resugar_list_patterns =
 
     switch (pattern) {
     | RegularPattern(e) =>
+      Debug.print_loc("pattern", e.ppat_loc)
       Doc.group(
         print_pattern(
           e,
@@ -547,6 +553,7 @@ let rec resugar_list_patterns =
           ~comments=localComments,
           ~next_loc,
         ),
+       
       )
     | SpreadPattern(e) =>
       Doc.group(
@@ -925,6 +932,10 @@ and print_pattern =
       if (func == list_cons) {
         let (_, bracket_line, _, _) =
           Locations.get_raw_pos_info(pat.ppat_loc.loc_start);
+
+        print_endline("sugar me up")
+        Debug.print_loc("pat loc", pat.ppat_loc);
+        Debug.print_loc("constr loc", location.loc);
 
         (
           resugar_list_patterns(
