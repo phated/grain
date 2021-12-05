@@ -3655,6 +3655,7 @@ let reformat_ast =
     );
   };
 
+
   let top_level_stmts =
     block_item_iterator(
       0,
