@@ -265,6 +265,8 @@ let rec block_item_iterator =
         )
       };
 
+    
+
     let this_loc = get_loc(item);
     let (_, this_line, this_char, _) =
       Locations.get_raw_pos_info(this_loc.loc_start);
@@ -417,17 +419,12 @@ let rec block_item_iterator =
 
       let bcb = before_comments_break(previous, comments_between);
 
-      
-
-
       let block_push =
         if (isBlock) {
           switch (comments_between) {
           | [] =>
             if (this_line - bracket_line > 1) {
-              print_endline("this line is " ++ string_of_int(this_line))
-            print_endline("bracket_line is " ++ string_of_int(bracket_line))
-              Doc.text("hardLine");
+              Doc.hardLine;
             } else {
               Doc.nil;
             }
@@ -545,15 +542,14 @@ let rec resugar_list_patterns =
 
     switch (pattern) {
     | RegularPattern(e) =>
-      Debug.print_loc("pattern", e.ppat_loc)
       Doc.group(
         print_pattern(
           e,
           ~original_source,
           ~comments=localComments,
           ~next_loc,
+          ~start_loc=None,
         ),
-       
       )
     | SpreadPattern(e) =>
       Doc.group(
@@ -564,6 +560,7 @@ let rec resugar_list_patterns =
             ~original_source,
             ~comments=localComments,
             ~next_loc,
+            ~start_loc=None,
           ),
         ]),
       )
@@ -767,8 +764,8 @@ and print_record_pattern =
           Grain_parsing__Parsetree.pattern,
         ),
       ) => {
-    let (_, pat) = patternloc;
-    pat.ppat_loc;
+    let (loc, _pat) = patternloc;
+    loc.loc;
   };
 
   let print_item =
@@ -779,6 +776,7 @@ and print_record_pattern =
         ),
       ) => {
     let (loc, pat) = patternloc;
+
     let printed_ident: Doc.t = print_ident(loc.txt);
 
     let localComments =
@@ -793,6 +791,7 @@ and print_record_pattern =
         ~original_source,
         ~comments=localComments,
         ~next_loc,
+        ~start_loc=Some(loc.loc),
       );
 
     let punned_pat = check_for_pattern_pun(pat);
@@ -811,6 +810,7 @@ and print_record_pattern =
   };
 
   let (_, bracket_line, _, _) = Locations.get_raw_pos_info(patloc.loc_start);
+
   let printed_fields =
     block_item_iterator(
       bracket_line,
@@ -843,6 +843,7 @@ and print_pattern =
       ~original_source: array(string),
       ~comments: list(Grain_parsing.Parsetree.comment),
       ~next_loc: Grain_parsing.Location.t,
+      ~start_loc: option(Grain_parsing.Location.t),
     ) => {
   let printed_pattern: (Doc.t, bool) =
     switch (pat.ppat_desc) {
@@ -933,13 +934,19 @@ and print_pattern =
         let (_, bracket_line, _, _) =
           Locations.get_raw_pos_info(pat.ppat_loc.loc_start);
 
-        print_endline("sugar me up")
-        Debug.print_loc("pat loc", pat.ppat_loc);
-        Debug.print_loc("constr loc", location.loc);
+        // we should have been passed the branch location
+        let start_line =
+          switch (start_loc) {
+          | None => bracket_line
+          | Some(loc) =>
+            let (_, patternline, _, _) =
+              Locations.get_raw_pos_info(loc.loc_start);
+            patternline;
+          };
 
         (
           resugar_list_patterns(
-            ~bracket_line,
+            ~bracket_line=start_line,
             ~patterns,
             ~original_source,
             ~comments,
@@ -1081,8 +1088,8 @@ and print_record =
           Grain_parsing__Parsetree.expression,
         ),
       ) => {
-    let (_, expr) = field;
-    expr.pexp_loc;
+    let (loc,_expr) = field;
+    loc.loc
   };
 
   let print_item =
@@ -1553,7 +1560,13 @@ and print_patterns =
         ~location=get_loc(p),
         comments,
       );
-    print_pattern(p, ~original_source, ~comments=localComments, ~next_loc);
+    print_pattern(
+      p,
+      ~original_source,
+      ~comments=localComments,
+      ~next_loc,
+      ~start_loc=None,
+    );
   };
 
   switch (patterns) {
@@ -1867,6 +1880,7 @@ and print_expression =
                     | None => branch.pmb_body.pexp_loc
                     | Some(b) => b.pexp_loc
                     },
+                  ~start_loc=Some(branch.pmb_loc),
                 ),
               ),
               switch (branch.pmb_guard) {
@@ -2748,6 +2762,7 @@ and print_value_bind =
               ~original_source,
               ~comments=patternComments,
               ~next_loc=vb.pvb_loc,
+              ~start_loc=None,
             ),
           ),
           after_let_comments_docs,
@@ -3639,6 +3654,9 @@ let reformat_ast =
       ~all_comments=parsed_program.comments,
     );
   };
+
+      let _ = Debug.print_comments(parsed_program.comments);
+
 
   let top_level_stmts =
     block_item_iterator(
