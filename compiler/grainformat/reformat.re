@@ -3655,9 +3655,6 @@ let reformat_ast =
     );
   };
 
-      let _ = Debug.print_comments(parsed_program.comments);
-
-
   let top_level_stmts =
     block_item_iterator(
       0,
