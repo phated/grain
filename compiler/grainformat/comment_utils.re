@@ -1,12 +1,12 @@
 open Grain_diagnostics;
+open Grain_parsing;
 module Doc = Res_doc;
 
-let rec get_comments_on_line =
-        (line: int, comments: list(Grain_parsing__Parsetree.comment)) =>
+let rec get_comments_on_line = (line: int, comments: list(Parsetree.comment)) =>
   switch (comments) {
   | [] => []
   | [c, ...remaining_comments] =>
-    let c_loc: Grain_parsing.Location.t = Locations.get_comment_loc(c);
+    let c_loc: Location.t = Locations.get_comment_loc(c);
     let (_, cmtline, cmtchar, _) =
       Locations.get_raw_pos_info(c_loc.loc_start);
 
@@ -19,11 +19,34 @@ let rec get_comments_on_line =
     }; // can stop early as there will be no more
   };
 
+let rec get_comments_before_location =
+        (~location: Location.t, comments: list(Parsetree.comment)) => {
+  let (_, stmt_start_line, stm_start_char, _) =
+    Locations.get_raw_pos_info(location.loc_start);
+  switch (comments) {
+  | [] => []
+  | [cmt, ...remaining_comments] =>
+    let c_loc: Location.t = Locations.get_comment_loc(cmt);
+    let (_, cmteline, cmtechar, _) =
+      Locations.get_raw_pos_info(c_loc.loc_end);
+    if (cmteline > stmt_start_line) {
+      []; // can stop now
+    } else if (cmteline < stmt_start_line) {
+      [cmt, ...get_comments_before_location(location, remaining_comments)];
+    } else if (cmtechar <= stm_start_char) {
+      [
+        //  ends on the same line as the stmt starts
+        cmt,
+        ...get_comments_before_location(location, remaining_comments),
+      ];
+    } else {
+      [];
+    };
+  };
+};
+
 let rec get_comments_inside_location =
-        (
-          ~location: Grain_parsing.Location.t,
-          comments: list(Grain_parsing.Parsetree.comment),
-        ) => {
+        (~location: Location.t, comments: list(Parsetree.comment)) => {
   let (_, stmt_start_line, stm_start_char, _) =
     Locations.get_raw_pos_info(location.loc_start);
   let (_, stmt_end_line, stmt_end_char, _) =
@@ -32,7 +55,7 @@ let rec get_comments_inside_location =
   switch (comments) {
   | [] => []
   | [cmt, ...remaining_comments] =>
-    let c_loc: Grain_parsing.Location.t = Locations.get_comment_loc(cmt);
+    let c_loc: Location.t = Locations.get_comment_loc(cmt);
 
     let (_, cmtsline, cmtschar, _) =
       Locations.get_raw_pos_info(c_loc.loc_start);
@@ -44,7 +67,9 @@ let rec get_comments_inside_location =
     } else if (cmteline < stmt_start_line) {
       get_comments_inside_location(location, remaining_comments);
     } else if
-      // need the complex comparisons here
+      // other cases were simple as we are on lines before or after.
+      // Now we need to check when the start line or end line match that we also take
+      // into account the start or end characte
       (cmtsline > stmt_start_line
        || cmtsline == stmt_start_line
        && cmtschar >= stm_start_char) {
@@ -62,11 +87,7 @@ let rec get_comments_inside_location =
 };
 
 let get_comments_between_locations =
-    (
-      ~loc1: Grain_parsing.Location.t,
-      ~loc2: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
-    ) => {
+    (~loc1: Location.t, ~loc2: Location.t, comments: list(Parsetree.comment)) => {
   let (_, stmt_end_line, stmt_end_char, _) =
     Locations.get_raw_pos_info(loc1.loc_end);
   let (_, stmt_start_line, stm_start_char, _) =
@@ -87,7 +108,7 @@ let get_comments_between_locations =
     pos_cnum: stm_start_char,
   };
 
-  let location: Grain_parsing.Location.t = {
+  let location: Location.t = {
     loc_start: start_loc,
     loc_end: end_loc,
     loc_ghost: false,
@@ -96,11 +117,7 @@ let get_comments_between_locations =
 };
 
 let get_comments_enclosed_and_before_location =
-    (
-      ~loc1: Grain_parsing.Location.t,
-      ~loc2: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
-    ) => {
+    (~loc1: Location.t, ~loc2: Location.t, comments: list(Parsetree.comment)) => {
   let (_, loc_start_line, loc_start_char, _) =
     Locations.get_raw_pos_info(loc1.loc_start);
   let (_, stmt_start_line, stm_start_char, _) =
@@ -121,7 +138,7 @@ let get_comments_enclosed_and_before_location =
     pos_cnum: stm_start_char,
   };
 
-  let location: Grain_parsing.Location.t = {
+  let location: Location.t = {
     loc_start: start_loc,
     loc_end: end_loc,
     loc_ghost: false,
@@ -132,9 +149,9 @@ let get_comments_enclosed_and_before_location =
 
 let get_comments_from_start_of_enclosing_location =
     (
-      ~wrapper: Grain_parsing.Location.t,
-      ~location: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
+      ~wrapper: Location.t,
+      ~location: Location.t,
+      comments: list(Parsetree.comment),
     ) => {
   let (_, wrap_start_line, wrap_start_char, _) =
     Locations.get_raw_pos_info(wrapper.loc_start);
@@ -154,7 +171,7 @@ let get_comments_from_start_of_enclosing_location =
     pos_cnum: loc_start_char,
   };
 
-  let location: Grain_parsing.Location.t = {
+  let location: Location.t = {
     loc_start: start_loc,
     loc_end: end_loc,
     loc_ghost: false,
@@ -163,11 +180,7 @@ let get_comments_from_start_of_enclosing_location =
 };
 
 let get_comments_between_locs =
-    (
-      ~loc1: Grain_parsing.Location.t,
-      ~loc2: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
-    ) => {
+    (~loc1: Location.t, ~loc2: Location.t, comments: list(Parsetree.comment)) => {
   let (_, stmt_end_line, stmt_end_char, _) =
     Locations.get_raw_pos_info(loc1.loc_end);
   let (_, stmt_start_line, stm_start_char, _) =
@@ -188,7 +201,7 @@ let get_comments_between_locs =
     pos_cnum: stm_start_char,
   };
 
-  let location: Grain_parsing.Location.t = {
+  let location: Location.t = {
     loc_start: start_loc,
     loc_end: end_loc,
     loc_ghost: false,
@@ -197,15 +210,11 @@ let get_comments_between_locs =
 };
 
 let rec get_comments_on_line_end =
-        (
-          line: int,
-          char: int,
-          comments: list(Grain_parsing.Parsetree.comment),
-        ) =>
+        (line: int, char: int, comments: list(Parsetree.comment)) =>
   switch (comments) {
   | [] => []
   | [c, ...remaining_comments] =>
-    let c_loc: Grain_parsing.Location.t = Locations.get_comment_loc(c);
+    let c_loc: Location.t = Locations.get_comment_loc(c);
     let (_, cmtline, cmtchar, _) =
       Locations.get_raw_pos_info(c_loc.loc_start);
 
@@ -222,7 +231,7 @@ let rec get_comments_on_line_start = (line: int, char: int, comments) =>
   switch (comments) {
   | [] => []
   | [c, ...remaining_comments] =>
-    let c_loc: Grain_parsing.Location.t = Locations.get_comment_loc(c);
+    let c_loc: Location.t = Locations.get_comment_loc(c);
     let (_, cmtline, cmtchar, _) =
       Locations.get_raw_pos_info(c_loc.loc_start);
 
@@ -236,17 +245,14 @@ let rec get_comments_on_line_start = (line: int, char: int, comments) =>
   };
 
 let get_comments_to_end_of_line =
-    (
-      ~location: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
-    ) => {
+    (~location: Location.t, comments: list(Parsetree.comment)) => {
   let (_, stmt_end_line, stmt_end_char, _) =
     Locations.get_raw_pos_info(location.loc_end);
 
   get_comments_on_line_end(stmt_end_line, stmt_end_char, comments);
 };
 
-let comment_to_doc = (comment: Grain_parsing.Parsetree.comment) => {
+let comment_to_doc = (comment: Parsetree.comment) => {
   let comment_string = Comments.get_comment_source(comment);
   let newline =
     switch (comment) {
@@ -258,32 +264,52 @@ let comment_to_doc = (comment: Grain_parsing.Parsetree.comment) => {
   Doc.concat([Doc.text(String.trim(comment_string)), newline]);
 };
 
-let nobreak_comment_to_doc = (comment: Grain_parsing.Parsetree.comment) => {
+let nobreak_comment_to_doc = (comment: Parsetree.comment) => {
   let comment_string = Comments.get_comment_source(comment);
 
-  Doc.concat([Doc.text(String.trim(comment_string))]);
+  Doc.text(String.trim(comment_string));
 };
 
 let get_after_brace_comments =
     (
-      loc: Grain_parsing.Location.t,
-      comments: list(Grain_parsing.Parsetree.comment),
+      loc: Location.t,
+      comments: list(Parsetree.comment),
+      first: option(Location.t),
     ) => {
   let (_, startline, startc, _) = Locations.get_raw_pos_info(loc.loc_start);
 
-  get_comments_on_line(startline, comments);
-};
+  let cmts = get_comments_on_line(startline, comments);
+  switch (cmts) {
+  | [] => cmts
+  | [fst, ...rem] =>
+    switch (first) {
+    | None => cmts
+    | Some(leading) =>
+      let fstclog = Locations.get_comment_loc(fst);
 
-let no_breakcomment_to_doc = (comment: Grain_parsing.Parsetree.comment) => {
-  let comment_string = Comments.get_comment_source(comment);
-  Doc.text(String.trim(comment_string));
+      let (_, itemstartline, itemstartc, _) =
+        Locations.get_raw_pos_info(leading.loc_start);
+
+      if (itemstartline > startline) {
+        cmts;
+      } else {
+        let (_, cmtstartline, cmtstartc, _) =
+          Locations.get_raw_pos_info(fstclog.loc_start);
+        if (cmtstartline >= itemstartline && cmtstartc > itemstartc) {
+          [];
+        } else {
+          cmts;
+        };
+      };
+    }
+  };
 };
 
 let rec comments_inner =
         (
-          prev: option(Grain_parsing.Parsetree.comment),
+          prev: option(Parsetree.comment),
           bracket_line_opt: option(int),
-          comments: list(Grain_parsing.Parsetree.comment),
+          comments: list(Parsetree.comment),
         ) => {
   switch (prev) {
   | None =>
@@ -362,7 +388,7 @@ let inbetween_comments_to_docs =
     (
       ~offset: bool,
       ~bracket_line: option(int),
-      comments: list(Grain_parsing.Parsetree.comment),
+      comments: list(Parsetree.comment),
     ) =>
   switch (comments) {
   | [] =>
@@ -382,17 +408,14 @@ let inbetween_comments_to_docs =
   };
 
 let rec get_comments_after_location =
-        (
-          ~location: Grain_parsing.Location.t,
-          comments: list(Grain_parsing.Parsetree.comment),
-        ) => {
+        (~location: Location.t, comments: list(Parsetree.comment)) => {
   let (_, stmt_end_line, stmt_end_char, _) =
     Locations.get_raw_pos_info(location.loc_end);
 
   switch (comments) {
   | [] => []
   | [cmt, ...remaining_comments] =>
-    let c_loc: Grain_parsing.Location.t = Locations.get_comment_loc(cmt);
+    let c_loc: Location.t = Locations.get_comment_loc(cmt);
 
     let (_, cmtsline, cmtschar, _) =
       Locations.get_raw_pos_info(c_loc.loc_start);
@@ -408,10 +431,7 @@ let rec get_comments_after_location =
 };
 
 let rec trailing_comments_inner =
-        (
-          prev: option(Grain_parsing.Parsetree.comment),
-          comments: list(Grain_parsing.Parsetree.comment),
-        ) => {
+        (prev: option(Parsetree.comment), comments: list(Parsetree.comment)) => {
   switch (prev) {
   | None =>
     switch (comments) {
@@ -464,16 +484,14 @@ let rec trailing_comments_inner =
   };
 };
 
-let block_trailing_comments_docs =
-    (comments: list(Grain_parsing.Parsetree.comment)) =>
+let block_trailing_comments_docs = (comments: list(Parsetree.comment)) =>
   switch (comments) {
   | [] => Doc.nil
   | _remaining_comments =>
     Doc.concat(trailing_comments_inner(None, comments))
   };
 
-let single_line_of_comments =
-    (comments: list(Grain_parsing.Parsetree.comment)) =>
+let single_line_of_comments = (comments: list(Parsetree.comment)) =>
   switch (comments) {
   | [] => Doc.nil
   | _ =>
@@ -484,4 +502,63 @@ let single_line_of_comments =
         List.map(c => {nobreak_comment_to_doc(c)}, comments),
       ),
     ])
+  };
+
+let rec new_comments_inner =
+        (prev: option(Parsetree.comment), comments: list(Parsetree.comment)) => {
+  switch (prev) {
+  | None =>
+    switch (comments) {
+    | [] => [Doc.nil]
+    | [cmt, ...rem] => [
+        comment_to_doc(cmt),
+        ...new_comments_inner(Some(cmt), rem),
+      ]
+    }
+  | Some(prev_cmt) =>
+    switch (comments) {
+    | [] => [Doc.nil]
+    | [cmt, ...rem] =>
+      let (_, prev_line, _, _) =
+        Locations.get_raw_pos_info(
+          Locations.get_comment_loc(prev_cmt).loc_end,
+        );
+      let (_, this_line, _, _) =
+        Locations.get_raw_pos_info(Locations.get_comment_loc(cmt).loc_start);
+
+      switch (this_line - prev_line) {
+      | 0 => [
+          Doc.space,
+          comment_to_doc(cmt),
+          ...new_comments_inner(Some(cmt), rem),
+        ]
+
+      | 1 => [
+          switch (prev_cmt) {
+          | Line(_) => Doc.nil
+          | _ => Doc.hardLine
+          },
+          comment_to_doc(cmt),
+          ...new_comments_inner(Some(cmt), rem),
+        ]
+      | _ => [
+          switch (prev_cmt) {
+          | Doc(_)
+          | Shebang(_)
+          | Line(_) => Doc.nil
+          | _ => Doc.hardLine
+          },
+          Doc.hardLine,
+          comment_to_doc(cmt),
+          ...new_comments_inner(Some(cmt), rem),
+        ]
+      };
+    }
+  };
+};
+
+let new_comments_to_docs = (comments: list(Parsetree.comment)) =>
+  switch (comments) {
+  | [] => Doc.nil
+  | _remaining_comments => Doc.concat(new_comments_inner(None, comments))
   };

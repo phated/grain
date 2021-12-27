@@ -5,10 +5,8 @@ import Map from "map"
 let data = [>]
 
 let busNumbers = Array.map(
-  ((num, idx)) => {
-    (Option.expect("Expected a number", None), idx)
-  },
-  data,
+  ((num, idx)) => {(Option.expect("Expected a number", None), idx)},
+  data
 )
 
 let sillyFunction = (a, b, c, d, e, f, g, h, j, k) => 10
@@ -23,7 +21,7 @@ sillyFunction(
   123456789,
   123456789,
   123456789,
-  123456789,
+  123456789
 )
 
 let filteri = (x, y) => []
@@ -39,8 +37,15 @@ let findIndex = (x, y) => None
 export let unique = array => {
   filteri(
     (el, index) =>
-      findIndex(value => value == el, array) == Some(index),
-    array,
+      findIndex(longvalue => longvalue == el, array) == Some(index),
+    array
+  )
+}
+
+export let unique2 = array => {
+  filteri(
+    (el, index) => findIndex(value => value == el, array) == Some(index),
+    array
   )
 }
 
@@ -51,7 +56,7 @@ export let batchActionCreateAccount = ({ index }) => {
 let ret = filteri(
   dst + _VALUE_OFFSET + dstIndex,
   src + _VALUE_OFFSET + srcIndex,
-  length,
+  length
 )
 
 let preExistingObjectsWithRefCountMismatch = Map.make():
