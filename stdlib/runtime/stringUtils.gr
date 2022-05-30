@@ -16,6 +16,353 @@ import Memory from "runtime/unsafe/memory"
 import Tags from "runtime/unsafe/tags"
 import BI from "runtime/bigint"
 import { reducedInteger } from "runtime/numbers"
+import { get_POWERS10, get_POWERS10_FAST_PATH } from "runtime/numberUtils"
+
+// temporary until everything is implemented
+import Exception from "runtime/exception"
+primitive throw: Exception -> a = "@throw"
+
+// https://stdrs.dev/nightly/x86_64-unknown-linux-gnu/src/core/num/dec2flt/common.rs.html#165
+@unsafe
+let is8Digits = (value: WasmI64) => {
+  let (-) = Wasmi64.sub
+  let (&) = Wasmi64.and
+  let (|) = WasmI64.or
+  let (==) = Wasmi64.eq
+
+  let a = value - 0x4646_4646_4646_4646N
+  let b = value - 0x3030_3030_3030_3030N
+  let c = (a | b) & 0x8080_8080_8080_8080N
+
+  c == 0N
+}
+
+// Try to parse 8 digits at a time:
+// https://johnnylee-sde.github.io/Fast-numeric-string-to-int/
+@unsafe
+let parse8Digits = (value: WasmI64) => {
+  let (+) = Wasmi64.add
+  let (-) = Wasmi64.sub
+  let (*) = WasmI64.mul
+  let (>>) = WasmI64.shrU
+  let (&) = Wasmi64.and
+  let (|) = WasmI64.or
+  let (==) = Wasmi64.eq
+
+  let _MASK = 0x0000_00FF_0000_00FFN
+
+  let a = digits - 0x3030_3030_3030_3030N
+  let b = (a * 10N) + (a >> 8N)
+  let c = (b & _MASK) * 0x000F_4240_0000_0064N
+  let d = ((b >> 16N) & _MASK) * 0x0000_2710_0000_0001N
+
+  ((c + d) >> 32N)
+}
+
+@unsafe
+let parseScientificExponent = (ptr: WasmI32, offset: WasmI32, len: WasmI32) => {
+  let mut exponent = 0N
+  let mut negative = false
+  let mut i = offset
+
+  // Parse the optional leading sign
+  match (WasmI32.load8U(ptr, i)) {
+    fst when fst == _CHAR_PLUS => {
+      offset = 1n
+      negative = false
+    }
+    fst when fst == _CHAR_MINUS => {
+      offset = 1n
+      negative = true
+    }
+    _ => break
+  }
+
+  if (i >= len) {
+    Err("Invalid exponent")
+  } else {
+    // Parse digits '0'-'9' until we hit a non-digit byte or reach the end of the string
+    while (i < len - 1) {
+      let digit = WasmI32.load8U(ptr, i) - 0x30n
+      if (digit >= 0n && digit < 10n) {
+        if (WasmI64.lt(exponent, 0x10000N)) {
+          exponent = WasmI64.add(WasmI64.extendI32U(digit), WasmI64.mul(10N, exponent))
+        }
+        i += 1n
+      } else {
+        break
+      }
+    }
+    if (i != len) {
+      Err("Invalid exponent")
+    } else if (negative) {
+      Ok(-exponent)
+    } else {
+      Ok(exponent)
+    }
+  }
+}
+
+@unsafe
+let parseFloatToParts = (string: String) => {
+  let _CHAR_MINUS = 0x2dn
+  let _CHAR_PLUS = 0x2bn
+  let _CHAR_DOT = 0x2en
+  let _CHAR_0 = 0x30n
+  let _CHAR_E = 0x65n
+  let _CHAR_e = 0x45n
+
+  let ptr = WasmI32.fromGrain(string)
+  match (WasmI32.load(ptr, 4n)) {
+    // Invalid string
+    len when len == 0n => Err("Invalid string"),
+    // Continue to parse the string
+    len => {
+      let mut i = 8n
+      let mut mantissa = 0N
+      let mut exponent = 0n
+      let mut numDigits = 0n
+      let mut numDigitsAfterDot = 0n
+
+      // Parse the optional leading sign
+      let mut negative = false
+      let mut offset = 0n
+      match (WasmI32.load8U(ptr, i)) {
+        fst when fst == _CHAR_PLUS => {
+          offset = 1n
+          negative = false
+        }
+        fst when fst == _CHAR_MINUS => {
+          offset = 1n
+          negative = true
+        }
+        _ => break
+      }
+
+      // Parse digits '0'-'9' until we hit a non-digit byte or reach the end of the string
+      while (i < len - 1) {
+        let digit = WasmI32.load8U(ptr, i) - _CHAR_0
+        if (digit >= 0n && digit < 10n) {
+          mantissa = WasmI64.add(WasmI64.mul(mantissa, 10N), WasmI64.extendI32U(digit))
+          numDigits += 1n
+          i += 1n
+        } else {
+          break
+        }
+      }
+
+      // Handle the dot
+      match (WasmI32.load8U(ptr, i)) {
+        c => c when c == _CHAR_DOT => {
+          i += 1n
+          let dotStartIndex = i
+          // Parse chunks of 8 digits
+          while (i + 8n <= len) {
+            let digits = WasmI64.load(ptr, i)
+            if (is8Digits(digits)) {
+              mantissa = WasmI64.add(parse8Digits(digits), WasmI64.mul(mantissa, 100000000N))
+              i += 8n
+            }
+          }
+          // Parse digits '0'-'9' until we hit a non-digit byte or reach the end of the string
+          while (i < len - 1) {
+            let digit = WasmI32.load8U(ptr, i) - _CHAR_0
+            if (digit >= 0n && digit < 10n) {
+              mantissa = WasmI64.add(WasmI64.extendI32U(digit), WasmI64.mul(mantissa, 10N))
+              i += 1n
+            } else {
+              break
+            }
+          }
+          numDigitsAfterDot = i - dotStartIndex
+          exponent = -numDigitsAfterDot
+        },
+        _ => break
+      }
+
+      numDigits += numDigitsAfterDot
+
+      match (numDigits) {
+        // Maybe someone tried to parse junk or an invalid JSON float like "Infinity" or "NaN"?
+        n => n == 0n => Err("Invalid float"),
+        // We're still good...
+        _ => {
+          let _MAX_MANTISSA_DIGITS = 19n // 10^19 fits in uint64
+          let _MIN_19DIGIT_INT = 100_0000_0000_0000_0000N
+
+          // Parse scientific notation
+          let exponentResult = match (WasmI32.load8U(ptr, i)) {
+            c when c == _CHAR_E || c == _CHAR_e => {
+              i += 1n
+              parseScientificExponent(ptr, i, len)
+            },
+            _ => Ok(0N)
+          }
+
+          // Hopefully, exponent parsing went alright
+          match (exponentResult) {
+            Ok(exponentNumber) => {
+              exponent += exponentNumber
+
+              // Check to see if we have to go down the slow path
+              if (numDigits > _MAX_MANTISSA_DIGITS) {
+                numDigits -= _MAX_MANTISSA_DIGITS
+                i = 8n + offset
+                while (i < len - 1) {
+                  let c = WasmI32.load8U(ptr, i)
+                  if (c == _CHAR_DOT || c == _CHAR_0) {
+                    let n = (c - (_CHAR_0 - 1n))
+                    numDigits -= if (n < 0n) { 0n } else if (n > 255n) { 255n } else { n }
+                    i += 1n
+                  } else {
+                    break
+                  }
+                }
+
+                if (numDigits > 0n) {
+                  mantissa = 0N
+                  throw Exception.AssertionError("parsing > 19 digit floats unimplemented")
+                  exponent = if (WasmI64.gte(mantissa, _MIN_19DIGIT_INT)) {
+                    throw Exception.AssertionError("bigint float parsing unimplemented")
+                  } else {
+                    // From Rust: https://github.com/Alexhuszagh/rust/blob/8752b403695a8830913571f0fd5ebfcf1483db37/library/core/src/num/dec2flt/parse.rs#L179-L184
+                    // the next byte must be present and be '.'
+                    // We know this is true because we had more than 19
+                    // digits previously, so we overflowed a 64-bit integer,
+                    // but parsing only the integral digits produced less
+                    // than 19 digits. That means we must have a decimal
+                    // point, and at least 1 fractional digit.
+                    i += 1n
+                    throw Exception.AssertionError("parsing > 19 digit floats unimplemented")
+                  }
+                  // Add back the explicit part
+                  exponent += exponentNumber
+                }
+              }
+
+              if (i != len) {
+                // Didn't parse the entire string
+                Err("Invalid float")
+              } else {
+                Ok((exponent, mantissa, negative, numDigits))
+              }
+            },
+            // Exponent parsing failed
+            err => err
+          }
+        }
+      }
+    }
+  }
+}
+
+@unsafe
+let _MIN_EXPONENT_FAST_PATH = -22N
+@unsafe
+let _MAX_EXPONENT_FAST_PATH = 22N
+@unsafe
+let _MAX_EXPONENT_DISGUISED_FAST_PATH = 37N
+@unsafe
+let _MAX_MANTISSA_FAST_PATH = 2N << 52N
+
+@unsafe
+export let isFastPath = (exponent: WasmI64, mantissa: WasmI64, negative: Bool, manyDigits: Bool) => {
+  let (<=) = WasmI64.lte
+  let (<<) = WasmI64.shl
+
+  _MIN_EXPONENT_FAST_PATH <= exponent &&
+  exponent <= _MAX_EXPONENT_DISGUISED_FAST_PATH &&
+  mantissa <= _MAX_MANTISSA_FAST_PATH &&
+  !manyDigits
+}
+
+@unsafe
+let getPowers10 = (i: WasmI32) => {
+  WasmI32.load(get_POWERS10(), 4n * i)
+}
+
+@unsafe
+let getPowers10FastPath = (i: WasmI32) => {
+  WasmI64.load(get_POWERS10_FAST_PATH(), 8n * i)
+}
+
+@unsafe
+export let parseFloat = (string: String) => {
+  match (parseFloatToParts(string)) {
+    Ok((exponent, mantissa, negative, numDigits)) => {
+      let value = if (isFastPath(exponent, mantissa, negative, numDigits)) {
+        let (<=) = WasmI64.lte
+        let floatOpt = if exponent <= _MAX_EXPONENT_FAST_PATH {
+          // normal fast path
+          let (*) = WasmI64.mul
+          let (/) = WasmI64.div
+          let (<) = WasmI64.lt
+
+          assert mantissa <= _MAX_MANTISSA_FAST_PATH
+
+          let n = if (exponent < 0N) {
+            mantissa / getPowers10FastPath(WasmI32.wrapI64(exponent * -1N))
+          } else {
+            mantissa * getPowers10FastPath(WasmI32.wrapI64(exponent))
+          }
+          if (negative) {
+            Some(n * -1N)
+          } else {
+            Some(n)
+          }
+        } else {
+          // disguised fast path
+          let (-) = WasmI64.sub
+          let (*) = WasmI64.mul
+          let (>) = WasmI64.gt
+
+          let shift = WasmI32.wrapI64(exponent - _MAX_EXPONENT_FAST_PATH)
+
+          // TODO: Can't wrap with this multiplication, so we need to detect and error on overflow
+          let mantissa = mantissa * WasmI64.extendI32U(getPowers10(shift))
+          if mantissa > _MAX_MANTISSA_FAST_PATH {
+            None
+          } else {
+            assert mantissa <= _MAX_MANTISSA_FAST_PATH
+
+            let n = mantissa * getPowers10FastPath(WasmI32.wrapI64(_MAX_EXPONENT_FAST_PATH))
+            if (negative) {
+              Some(n * -1N)
+            } else {
+              Some(n)
+            }
+          }
+        }
+      }
+      // Check if fast path worked
+      match (floatOpt) {
+        Some(n) => Ok(n)
+        None => {
+          // // If significant digits were truncated, then we can have rounding error
+          // // only if `mantissa + 1` produces a different result. We also avoid
+          // // redundantly using the Eisel-Lemire algorithm if it was unable to
+          // // correctly round on the first pass.
+          // let mut fp = compute_float::<F>(num.exponent, num.mantissa);
+          // if num.many_digits && fp.e >= 0 && fp != compute_float::<F>(num.exponent, num.mantissa + 1) {
+          //     fp.e = -1;
+          // }
+          // // Unable to correctly round the float using the Eisel-Lemire algorithm.
+          // // Fallback to a slower, but always correct algorithm.
+          // if fp.e < 0 {
+          //     fp = parse_long_mantissa::<F>(s);
+          // }
+
+          // let mut float = biased_fp_to_float::<F>(fp);
+          // if num.negative {
+          //     float = -float;
+          // }
+          // Ok(float)
+        }
+      }
+    },
+    err => err
+  }
+}
 
 @unsafe
 export let rec parseInt = (string: String, radix: Number) => {

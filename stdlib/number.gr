@@ -15,7 +15,7 @@ import {
   isFloat,
   isBoxedNumber,
 } from "runtime/numbers"
-import { parseInt } from "runtime/stringUtils"
+import { parseInt, parseFloat } from "runtime/stringUtils"
 import { newFloat64, newInt64 } from "runtime/dataStructures"
 import Tags from "runtime/unsafe/tags"
 
@@ -317,3 +317,13 @@ export let isInfinite = (x: Number) => {
  * @since v0.4.5
  */
 export parseInt
+
+/**
+ * Parses a string representation of a float into a `Number`
+ *
+ * @param input: The string to parse
+ * @returns `Ok(value)` containing the parsed number on a successful parse or `Err(msg)` containing an error message string otherwise
+ *
+ * @since v0.5.0
+ */
+export parseFloat
