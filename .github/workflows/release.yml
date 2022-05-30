@@ -14,7 +14,7 @@ jobs:
       - uses: GoogleCloudPlatform/release-please-action@v3.2.5
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           command: manifest
 
   prepare-artifacts:
@@ -78,7 +78,7 @@ jobs:
       - name: Upload Binary (Windows)
         uses: grain-lang/upload-release-action@v3.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           file: ./pkg/grain-win.exe
           asset_name: grain-win-x64.exe
           tag: ${{ needs.release-please.outputs.tag_name }}
@@ -86,7 +86,7 @@ jobs:
       - name: Upload Binary (Mac)
         uses: grain-lang/upload-release-action@v3.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           file: ./pkg/grain-macos
           asset_name: grain-mac-x64
           tag: ${{ needs.release-please.outputs.tag_name }}
@@ -94,7 +94,7 @@ jobs:
       - name: Upload Binary (Linux)
         uses: grain-lang/upload-release-action@v3.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           file: ./pkg/grain-linux
           asset_name: grain-linux-x64
           tag: ${{ needs.release-please.outputs.tag_name }}
@@ -111,7 +111,7 @@ jobs:
         if: ${{ needs.release-please.outputs.releases_created }}
         uses: grain-lang/upload-release-action@v3.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           file: ./stdlib/${{ env.STDLIB_TAR }}
           asset_name: stdlib.tgz
           tag: ${{ needs.release-please.outputs.tag_name }}
@@ -128,7 +128,7 @@ jobs:
         if: ${{ needs.release-please.outputs.releases_created }}
         uses: grain-lang/upload-release-action@v3.0.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEMP }}
           file: ./js-runner/${{ env.RUNNER_TAR }}
           asset_name: js-runner.tgz
           tag: ${{ needs.release-please.outputs.tag_name }}
