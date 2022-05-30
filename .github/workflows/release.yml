@@ -144,7 +144,7 @@ jobs:
           workflow: Grain Release
           token: ${{ secrets.WORKFLOW_TOKEN }}
           ref: master
-          repo: grain-lang/grain-lang.org
+          repo: phated/grain-lang.org
           tag_input: ${{ needs.release-please.outputs.tag_name }}
 
   dispatch-homebrew:
@@ -158,7 +158,7 @@ jobs:
           workflow: Grain Release
           token: ${{ secrets.WORKFLOW_TOKEN }}
           ref: main
-          repo: grain-lang/homebrew-tap
+          repo: phated/homebrew-tap
           tag_input: ${{ needs.release-please.outputs.tag_name }}
 
   dispatch-docker:
@@ -172,7 +172,7 @@ jobs:
           workflow: Publish Docker images
           token: ${{ secrets.WORKFLOW_TOKEN }}
           ref: main
-          repo: grain-lang/grain
+          repo: phated/grain
           tag_input: ${{ needs.release-please.outputs.tag_name }}
 
   npm-release-stdlib:
