@@ -16,7 +16,7 @@ const program = require("commander");
 const exec = require("./exec.js");
 const run = require("./run.js");
 
-const stdlibPath = require("@grain/stdlib");
+const stdlibPath = require("@grain-testing/stdlib");
 
 function list(val) {
   return val.split(",");

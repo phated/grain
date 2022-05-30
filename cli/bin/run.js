@@ -1,5 +1,5 @@
 const path = require("path");
-const runner = require("@grain/js-runner");
+const runner = require("@grain-testing/js-runner");
 require("./pkg");
 
 module.exports = async function run(filename, options) {

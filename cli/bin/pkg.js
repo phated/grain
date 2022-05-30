@@ -2,7 +2,7 @@
 if (process.pkg) {
   const fs = require("fs");
   const path = require("path");
-  const stdlibPath = require("@grain/stdlib");
+  const stdlibPath = require("@grain-testing/stdlib");
   const stdlibPathWithTrailingSep = `${stdlibPath}${path.sep}`;
   // From https://github.com/sindresorhus/escape-string-regexp/blob/main/index.js
   const regexpSafeStdlibPath = stdlibPathWithTrailingSep
