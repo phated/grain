@@ -21,12 +21,12 @@
         {
           "type": "json",
           "path": "package.json",
-          "jsonpath": "$.dependencies['@grain/js-runner']"
+          "jsonpath": "$.dependencies['@grain-testing/js-runner']"
         },
         {
           "type": "json",
           "path": "package.json",
-          "jsonpath": "$.dependencies['@grain/stdlib']"
+          "jsonpath": "$.dependencies['@grain-testing/stdlib']"
         }
       ]
     },
