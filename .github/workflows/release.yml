@@ -103,8 +103,9 @@ jobs:
         if: ${{ needs.release-please.outputs.releases_created }}
         working-directory: ./stdlib
         # Runs `npm pack` and assigns the filename to an env var we can use later
+        # `sed` is used to workaround https://github.com/npm/cli/issues/3405
         run: |
-          echo "STDLIB_TAR=$(npm pack --json | jq -r '.[0].filename')" >> $GITHUB_ENV
+          echo "STDLIB_TAR=$(npm pack --json | jq -r '.[0].filename' | sed -r 's/@//g' | sed -r 's/\//-/g')" >> $GITHUB_ENV
 
       - name: Upload stdlib
         id: stdlib-upload
@@ -120,8 +121,9 @@ jobs:
         if: ${{ needs.release-please.outputs.releases_created }}
         working-directory: ./js-runner
         # Runs `npm pack` and assigns the filename to an env var we can use later
+        # `sed` is used to workaround https://github.com/npm/cli/issues/3405
         run: |
-          echo "RUNNER_TAR=$(npm pack --json | jq -r '.[0].filename')" >> $GITHUB_ENV
+          echo "RUNNER_TAR=$(npm pack --json | jq -r '.[0].filename' | sed -r 's/@//g' | sed -r 's/\//-/g')" >> $GITHUB_ENV
 
       - name: Upload js-runner
         id: js-runner-upload
