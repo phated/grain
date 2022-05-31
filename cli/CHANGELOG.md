@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.2](https://github.com/phated/grain/compare/cli-v0.5.1...cli-v0.5.2) (2022-05-31)
+
+
+### Miscellaneous Chores
+
+* **cli:** Synchronize Grain versions
+
 ### [0.5.1](https://github.com/phated/grain/compare/cli-v0.5.0...cli-v0.5.1) (2022-05-31)
 
 

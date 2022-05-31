@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.2](https://github.com/phated/grain/compare/compiler-v0.5.1...compiler-v0.5.2) (2022-05-31)
+
+
+### Miscellaneous Chores
+
+* **compiler:** Synchronize Grain versions
+
 ### [0.5.1](https://github.com/phated/grain/compare/compiler-v0.5.0...compiler-v0.5.1) (2022-05-31)
 
 
