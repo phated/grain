@@ -11,9 +11,7 @@ jobs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
       stdlib_tag_name: ${{ steps.release.outputs.stdlib--tag_name }}
-      stdlib_release_created: ${{ steps.release.outputs.stdlib--release_created }}
       js-runner_tag_name: ${{ steps.release.outputs.js-runner--tag_name }}
-      js-runner_release_created: ${{ steps.release.outputs.js-runner--release_created }}
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v3.2.5
         id: release
@@ -104,7 +102,7 @@ jobs:
           tag: ${{ needs.release-please.outputs.tag_name }}
 
       - name: Pack stdlib
-        if: ${{ needs.release-please.outputs.stdlib_release_created }}
+        if: ${{ needs.release-please.outputs.releases_created }}
         working-directory: ./stdlib
         # Runs `npm pack` and assigns the filename to an env var we can use later
         # `sed` is used to workaround https://github.com/npm/cli/issues/3405
@@ -122,7 +120,7 @@ jobs:
           tag: ${{ needs.release-please.outputs.stdlib_tag_name }}
 
       - name: Pack js-runner
-        if: ${{ needs.release-please.outputs.js-runner_release_created }}
+        if: ${{ needs.release-please.outputs.releases_created }}
         working-directory: ./js-runner
         # Runs `npm pack` and assigns the filename to an env var we can use later
         # `sed` is used to workaround https://github.com/npm/cli/issues/3405
