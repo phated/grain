@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.5.2](https://github.com/phated/grain/compare/grain-v0.5.1...grain-v0.5.2) (2022-05-31)
+
+
+### Bug Fixes
+
+* **ci:** Drop last-release-sha ([4a44ef2](https://github.com/phated/grain/commit/4a44ef229eb1c1a2c3bfa380c3cfa04a8cbe6270))
+* **ci:** Drop those 2 outputs ([f8d036e](https://github.com/phated/grain/commit/f8d036ec89bea08117d2d3d0e50a8f830b1f54e4))
+
 ### [0.5.1](https://github.com/phated/grain/compare/grain-v0.5.0...grain-v0.5.1) (2022-05-31)
 
 
