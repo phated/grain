@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.5.1](https://github.com/phated/grain/compare/grain-v0.5.0...grain-v0.5.1) (2022-05-31)
+
+
+### Bug Fixes
+
+* **ci:** Restore individual releases ([05bb9da](https://github.com/phated/grain/commit/05bb9da480522d2664edb7a497c9a255dea7e29a))
+* **ci:** Use sed to workaround npm bug ([80cc55c](https://github.com/phated/grain/commit/80cc55c18c0cfb2b6baa7dec514d21b207f8b70d))
+
 ## [0.5.0](https://github.com/phated/grain/compare/grain-v0.4.7...grain-v0.5.0) (2022-05-30)
 
 
